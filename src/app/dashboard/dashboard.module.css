@@ -1,0 +1,269 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--tendly-paper);
+  color: var(--tendly-ink);
+}
+
+.header {
+  border-bottom: 1px solid var(--tendly-rule);
+  background: var(--tendly-card);
+}
+
+.headerInner {
+  width: min(100% - 2.5rem, 72rem);
+  min-height: 4rem;
+  margin-inline: auto;
+  padding-block: 0.65rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+}
+
+.brandGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.wordmark {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--tendly-ink);
+  text-decoration: none;
+}
+
+.divider {
+  color: var(--tendly-rule-hover);
+}
+
+.businessName {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.pillTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: var(--tendly-tag);
+  color: var(--tendly-tag-text);
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.publicLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--tendly-rule-control);
+  background: var(--tendly-slot-fill);
+  color: var(--tendly-ink);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: border-color 180ms ease-out;
+}
+
+.publicLink:hover {
+  border-color: var(--tendly-rule-hover);
+}
+
+.signOutButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding-inline: 1.15rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--tendly-ink);
+  background: transparent;
+  color: var(--tendly-ink);
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 180ms ease-out;
+}
+
+.signOutButton:hover {
+  background: rgb(28 24 19 / 0.06);
+}
+
+.main {
+  width: min(100% - 2.5rem, 72rem);
+  margin-inline: auto;
+  padding-block: 2rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.6rem, 1.25rem + 1.2vw, 2.25rem);
+  font-weight: 300;
+  line-height: 1.15;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--tendly-ink-soft);
+  font-size: 0.95rem;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.panel {
+  background: var(--tendly-card);
+  border: 1px solid var(--tendly-rule);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.panelHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.95rem 1.25rem;
+  border-bottom: 1px solid var(--tendly-rule);
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.panelMeta {
+  color: var(--tendly-ink-soft);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.metricBody {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metricLabel {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--tendly-ink-soft);
+}
+
+.metricValue {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.listItem {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.25rem;
+}
+
+.listItem + .listItem {
+  border-top: 1px solid var(--tendly-rule);
+}
+
+.itemName {
+  font-size: 1rem;
+  color: var(--tendly-ink);
+}
+
+.itemMeta {
+  color: var(--tendly-ink-soft);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.staffCard {
+  padding: 0.95rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.staffCard + .staffCard {
+  border-top: 1px solid var(--tendly-rule);
+}
+
+.staffHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.hoursList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.hoursRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--tendly-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 800px) {
+  .summaryGrid,
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}

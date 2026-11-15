@@ -182,10 +182,18 @@ isOneToOne: false
               "staff_id": string,"starts_at": string
             }[]
                            },
+"complete_onboarding":
+{ Args: { "p_buffer_min"?: number,"p_business_id": string,"p_duration_min": number,"p_end_time"?: string,"p_price_cents"?: number,"p_service_name": string,"p_staff_name": string,"p_start_time"?: string,"p_weekdays"?: (number)[] }; Returns: {
+              "service_id": string,"staff_id": string
+            }[]
+                           },
 "create_booking":
 { Args: { "p_business_id": string,"p_customer_email": string,"p_customer_name": string,"p_customer_phone"?: string,"p_customer_timezone"?: string,"p_service_id": string,"p_staff_id": string,"p_starts_at": string }; Returns: {
               "booking_id": string,"ends_at": string,"manage_token": string,"staff_id": string,"starts_at": string
             }[]
+                           },
+"create_business":
+{ Args: { "p_name": string,"p_slug": string,"p_timezone": string }; Returns: string
                            }
           }
           Enums: {
