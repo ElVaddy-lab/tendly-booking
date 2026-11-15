@@ -110,7 +110,7 @@ pg_cron ─► /api/cron/reminders, /api/cron/demo-reset (секрет у заг
 - [x] 3. (2026-11-15: Next 16.4.6 + Cache Components, shadcn radix-nova, Supabase CLI 2.122.1 як devDependency, Vitest + Playwright + axe + pgTAP зелені локально; git ще не ініціалізований) Каркас: `create-next-app`, shadcn/ui, Supabase CLI (`supabase init`, локальний стек у Docker), ESLint, Vitest, Playwright, CI. `CONTEXT.md` з доменною мовою (Business, Member, Staff, Service, Slot, Booking, Time off, Plan).
 
 ### Ядро
-- [ ] 4. Схема, RLS, `available_slots`, `create_booking` + exclusion constraint. **Спершу pgTAP-тести**, потім SQL. Згенерувати типи.
+- [x] 4. Схема, RLS, `available_slots`, `create_booking` + exclusion constraint. **Спершу pgTAP-тести**, потім SQL. Згенерувати типи. (2026-11-15: 4 міграції, 93 pgTAP-перевірки, `supabase db lint` чисто. Свідомо відкладено: RPC створення бізнесу — етап 5; ліміти тарифу — етап 11; гонка двох запитів — Playwright, етап 12 (pgTAP в одній сесії її не відтворить); «змінені години» з додатковим часом — у MVP time off лише забирає час.)
 - [ ] 5. Онбординг: реєстрація → створення бізнесу (назва, slug, часовий пояс) → перша послуга й розклад.
 - [ ] 6. Адмінка: послуги, персонал, робочі години, винятки; запрошення учасника посиланням з роллю.
 - [ ] 7. Публічна сторінка бронювання: послуга → майстер (або «будь-хто») → дата → слот → форма → підтвердження + `.ics`.
