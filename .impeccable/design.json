@@ -1,0 +1,742 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-15T13:20:34.971Z",
+  "title": "Design System: Tendly",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Workshop Ink",
+        "canonical": "#1c1813",
+        "oklch": "oklch(21.2% 0.011 73.3)",
+        "tonalRamp": [
+          "#0d0b08",
+          "#292621",
+          "#49443e",
+          "#6b655e",
+          "#8e8881",
+          "#b2ada7",
+          "#d5d0cb",
+          "#f2eee9"
+        ]
+      },
+      "ink-hover": {
+        "role": "primary",
+        "displayName": "Warm Ink Hover",
+        "canonical": "#352e27",
+        "oklch": "oklch(30.6% 0.016 67.2)",
+        "tonalRamp": [
+          "#0e0a07",
+          "#2b2520",
+          "#4b443c",
+          "#6d645b",
+          "#91877e",
+          "#b5aca4",
+          "#d7d0c8",
+          "#f4ede7"
+        ]
+      },
+      "tan": {
+        "role": "secondary",
+        "displayName": "Morning Tan",
+        "canonical": "#e3c9a9",
+        "oklch": "oklch(85.0% 0.052 72.8)",
+        "tonalRamp": [
+          "#140800",
+          "#33230c",
+          "#564125",
+          "#7b613f",
+          "#9f8463",
+          "#c1aa8d",
+          "#e2cdb4",
+          "#fdebd5"
+        ]
+      },
+      "wood": {
+        "role": "neutral",
+        "displayName": "Pale Oak",
+        "canonical": "#e4d0b8",
+        "oklch": "oklch(86.8% 0.039 72.3)",
+        "tonalRamp": [
+          "#120901",
+          "#302414",
+          "#52422e",
+          "#766249",
+          "#9a856d",
+          "#bdab95",
+          "#decebb",
+          "#faecdc"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "#f7f0e9",
+        "oklch": "oklch(95.9% 0.012 67.7)",
+        "tonalRamp": [
+          "#0e0b08",
+          "#2a2621",
+          "#49443e",
+          "#6c655e",
+          "#8f8881",
+          "#b3ada7",
+          "#d5d0ca",
+          "#f2eee9"
+        ]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Card Paper",
+        "canonical": "#f7eee8",
+        "oklch": "oklch(95.4% 0.013 56.3)",
+        "tonalRamp": [
+          "#0e0a08",
+          "#2b2522",
+          "#4b433f",
+          "#6d645e",
+          "#908781",
+          "#b4aca7",
+          "#d6cfcb",
+          "#f3ede9"
+        ]
+      },
+      "slot-fill": {
+        "role": "neutral",
+        "displayName": "Slot Paper",
+        "canonical": "#fbf6f1",
+        "oklch": "oklch(97.6% 0.009 67.7)",
+        "tonalRamp": [
+          "#0d0b09",
+          "#292623",
+          "#484440",
+          "#6a6560",
+          "#8d8883",
+          "#b1ada9",
+          "#d4d0cc",
+          "#f1eeea"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#4f4c46",
+        "oklch": "oklch(41.7% 0.011 84.6)",
+        "tonalRamp": [
+          "#0d0b08",
+          "#282622",
+          "#48453f",
+          "#69665e",
+          "#8c8981",
+          "#b1ada7",
+          "#d3d1cb",
+          "#f1eee9"
+        ]
+      },
+      "ink-on-wood": {
+        "role": "neutral",
+        "displayName": "Ink on Wood",
+        "canonical": "#4a3f35",
+        "oklch": "oklch(37.6% 0.022 64.3)",
+        "tonalRamp": [
+          "#100a05",
+          "#2d251d",
+          "#4e4339",
+          "#716357",
+          "#94867a",
+          "#b8aba0",
+          "#dacfc5",
+          "#f6ede4"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Paper Rule",
+        "canonical": "#e2d8cd",
+        "oklch": "oklch(88.7% 0.019 70.2)",
+        "tonalRamp": [
+          "#0f0a06",
+          "#2b251e",
+          "#4c433b",
+          "#6e6459",
+          "#91877c",
+          "#b5aca2",
+          "#d7d0c7",
+          "#f4ede6"
+        ]
+      },
+      "rule-control": {
+        "role": "neutral",
+        "displayName": "Control Rule",
+        "canonical": "#ddd2c6",
+        "oklch": "oklch(86.9% 0.020 70.0)",
+        "tonalRamp": [
+          "#0f0a06",
+          "#2c251e",
+          "#4c4339",
+          "#6f6458",
+          "#92877b",
+          "#b6aca1",
+          "#d8cfc6",
+          "#f5ede5"
+        ]
+      },
+      "rule-hover": {
+        "role": "neutral",
+        "displayName": "Hover Rule",
+        "canonical": "#c9b9a6",
+        "oklch": "oklch(79.4% 0.032 72.1)",
+        "tonalRamp": [
+          "#110a03",
+          "#2f2418",
+          "#504232",
+          "#73634f",
+          "#978672",
+          "#baab9a",
+          "#dccfbf",
+          "#f8eddf"
+        ]
+      },
+      "tag": {
+        "role": "neutral",
+        "displayName": "Demo Tag",
+        "canonical": "#ebe5da",
+        "oklch": "oklch(92.4% 0.016 82.8)",
+        "tonalRamp": [
+          "#0d0b06",
+          "#2a261f",
+          "#49443c",
+          "#6b655a",
+          "#8e887d",
+          "#b3ada3",
+          "#d5d0c8",
+          "#f2eee6"
+        ]
+      },
+      "tag-text": {
+        "role": "neutral",
+        "displayName": "Demo Tag Text",
+        "canonical": "#5f574f",
+        "oklch": "oklch(46.2% 0.016 67.4)",
+        "tonalRamp": [
+          "#0e0a07",
+          "#2b251f",
+          "#4b443c",
+          "#6e645b",
+          "#91877e",
+          "#b5aca4",
+          "#d7d0c8",
+          "#f4ede7"
+        ]
+      },
+      "night": {
+        "role": "neutral",
+        "displayName": "Shaded Room",
+        "canonical": "#2c2421",
+        "oklch": "oklch(26.8% 0.013 41.6)",
+        "tonalRamp": [
+          "#0f0a08",
+          "#2b2522",
+          "#4c4340",
+          "#6e635f",
+          "#918682",
+          "#b5aba8",
+          "#d7cfcc",
+          "#f4edea"
+        ]
+      },
+      "night-text": {
+        "role": "neutral",
+        "displayName": "Shaded Room Text",
+        "canonical": "#f1e7dc",
+        "oklch": "oklch(93.3% 0.018 70.2)",
+        "tonalRamp": [
+          "#0f0a06",
+          "#2b251e",
+          "#4b443b",
+          "#6e6459",
+          "#91877c",
+          "#b5aca3",
+          "#d7d0c7",
+          "#f4ede6"
+        ]
+      },
+      "night-muted": {
+        "role": "neutral",
+        "displayName": "Shaded Room Muted",
+        "canonical": "#cbbcae",
+        "oklch": "oklch(80.4% 0.026 65.5)",
+        "tonalRamp": [
+          "#100a04",
+          "#2e241b",
+          "#4f4237",
+          "#726354",
+          "#958678",
+          "#b9ab9e",
+          "#dbcfc3",
+          "#f7ece3"
+        ]
+      },
+      "pending": {
+        "role": "neutral",
+        "displayName": "Pending Chip",
+        "canonical": "#ece3d9",
+        "oklch": "oklch(92.0% 0.017 70.5)",
+        "tonalRamp": [
+          "#0e0a06",
+          "#2b251f",
+          "#4b443c",
+          "#6d645a",
+          "#90887e",
+          "#b4aca4",
+          "#d7d0c8",
+          "#f3ede7"
+        ]
+      },
+      "refused-bg": {
+        "role": "neutral",
+        "displayName": "Refused Chip",
+        "canonical": "#ead9d3",
+        "oklch": "oklch(89.7% 0.021 40.5)",
+        "tonalRamp": [
+          "#100907",
+          "#2e2420",
+          "#4f423d",
+          "#73625c",
+          "#96857f",
+          "#b9aaa5",
+          "#dbcec9",
+          "#f7ece7"
+        ]
+      },
+      "refused-text": {
+        "role": "neutral",
+        "displayName": "Refused Rust",
+        "canonical": "#7a2f22",
+        "oklch": "oklch(41.0% 0.108 31.9)",
+        "tonalRamp": [
+          "#220000",
+          "#490e06",
+          "#732a1d",
+          "#a14636",
+          "#c66c5b",
+          "#e79686",
+          "#ffbdae",
+          "#ffddd0"
+        ]
+      },
+      "scrollbar-thumb": {
+        "role": "neutral",
+        "displayName": "Scrollbar Thumb",
+        "canonical": "#c8aa90",
+        "oklch": "oklch(75.8% 0.050 62.9)",
+        "tonalRamp": [
+          "#150800",
+          "#35220f",
+          "#583f28",
+          "#7e5f43",
+          "#a28267",
+          "#c4a890",
+          "#e5ccb7",
+          "#ffead8"
+        ]
+      }
+    },
+    "colorAlphas": [
+      {
+        "name": "selection-wash",
+        "value": "rgb(227 201 169 / 0.45)",
+        "purpose": "Selected service and barber rows (tan at 45%)."
+      },
+      {
+        "name": "selection-wash-hover",
+        "value": "rgb(227 201 169 / 0.25)",
+        "purpose": "Hover on service and barber rows."
+      },
+      {
+        "name": "rule-on-wood",
+        "value": "rgb(28 24 19 / 0.18)",
+        "purpose": "Hairlines drawn directly on the oak (role list, footer)."
+      },
+      {
+        "name": "rule-on-night",
+        "value": "rgb(241 231 220 / 0.14)",
+        "purpose": "Hairlines on the dark band."
+      },
+      {
+        "name": "quiet-hover",
+        "value": "rgb(28 24 19 / 0.06)",
+        "purpose": "Hover wash of the quiet outlined pill."
+      }
+    ],
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Landing headline only; comp-scaled above 1100px (112/2752 of viewport width)."
+      },
+      "display-narrow": {
+        "displayName": "Display (narrow)",
+        "purpose": "Landing headline below 1100px."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles, light, balanced, 18-22ch."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Prices; light, tabular."
+      },
+      "row-name": {
+        "displayName": "Row name",
+        "purpose": "Large clickable list rows (roles)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Proof titles and card titles."
+      },
+      "body-lead": {
+        "displayName": "Body lead",
+        "purpose": "Section leads, max 52ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Paragraphs, plan items, buttons; max 50ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Column labels, day names, chips, notes; sentence case."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Tendly in the nav (600); footer mark is 500 at 1.25rem."
+      }
+    },
+    "fonts": [
+      {
+        "family": "Krub",
+        "source": "next/font/google",
+        "variable": "--font-krub",
+        "weights": [
+          300,
+          400,
+          500,
+          600
+        ],
+        "subsets": [
+          "latin"
+        ],
+        "display": "swap"
+      }
+    ],
+    "shadows": [
+      {
+        "name": "daylight-panel",
+        "value": "-40px 38px 14px rgb(74 50 28 / 0.24), 0 3px 10px rgb(74 50 28 / 0.1)",
+        "purpose": "Large paper panel resting on the oak (price list). Light from the upper right; shadow falls lower left."
+      },
+      {
+        "name": "daylight-card-hero",
+        "value": "calc(-56 * var(--u)) calc(54 * var(--u)) calc(10 * var(--u)) rgb(74 50 28 / 0.36), calc(-24 * var(--u)) calc(22 * var(--u)) calc(6 * var(--u)) rgb(74 50 28 / 0.14), 0 calc(4 * var(--u)) calc(14 * var(--u)) rgb(74 50 28 / 0.1)",
+        "purpose": "Booking card in the comp-locked landing hero above 1100px."
+      },
+      {
+        "name": "daylight-card-narrow",
+        "value": "-22px 22px 10px rgb(74 50 28 / 0.22), 0 2px 8px rgb(74 50 28 / 0.1)",
+        "purpose": "Booking card below 1100px."
+      },
+      {
+        "name": "daylight-on-night",
+        "value": "-10px 14px 28px rgb(0 0 0 / 0.28)",
+        "purpose": "Paper rows resting on the dark band."
+      },
+      {
+        "name": "ambient-float",
+        "value": "0 calc(10 * var(--u)) calc(40 * var(--u)) rgb(92 64 38 / 0.16)",
+        "purpose": "Nav pill floating above the surface."
+      },
+      {
+        "name": "inline-object",
+        "value": "0 calc(8 * var(--u)) calc(24 * var(--u)) rgb(74 50 28 / 0.22)",
+        "purpose": "Photograph pill inside the headline (0.16 alpha for the paper clock pill)."
+      },
+      {
+        "name": "window-edge",
+        "value": "inset 0 calc(3 * var(--u)) 0 rgb(226 204 182 / 0.35)",
+        "purpose": "Top edge of the dark band, paired with radial-gradient(60% calc(160 * var(--u)) at 45% 0, rgb(120 96 86 / 0.45), transparent) over night."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-expo-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Answers to action hover/click: buttons 200ms, role arrow translate 300ms, status crossfade 450ms."
+      },
+      {
+        "name": "ease-selection",
+        "value": "180ms ease-out",
+        "purpose": "Selection washes and chip border changes."
+      },
+      {
+        "name": "duration-button",
+        "value": "200ms",
+        "purpose": "Ink pill background change."
+      },
+      {
+        "name": "duration-arrow",
+        "value": "300ms",
+        "purpose": "Role-row arrow slides 0.25rem right."
+      },
+      {
+        "name": "duration-status",
+        "value": "450ms",
+        "purpose": "Race-demo status chip colour crossfade."
+      },
+      {
+        "name": "narrative-replay",
+        "value": "once at 60% intersection; pending 0-900ms, first booked at 900ms, refusal at 1500ms",
+        "purpose": "Race demo replays once; its final state is the default render; skipped under reduced motion."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "@media (prefers-reduced-motion: reduce) { transition: none }",
+        "purpose": "Removes every transition on the page."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow",
+        "value": "1100px",
+        "purpose": "Below: hero restacks in rem, card single-column, rows collapse."
+      }
+    ],
+    "layout": {
+      "compScale": {
+        "token": "--u",
+        "value": "calc(100vw / 2752)",
+        "scope": "Landing hero above 1100px only; not a system rule."
+      },
+      "container": "min(100% - 2.5rem, 72rem)"
+    },
+    "materials": [
+      {
+        "name": "wood-ground",
+        "file": "public/plates/wood-ground.png",
+        "purpose": "Window-lit oak photograph behind the first viewport only; masked with linear-gradient(to bottom, #000 82%, transparent); hidden below 1100px."
+      },
+      {
+        "name": "wood-tile",
+        "file": "public/plates/wood-tile.jpg",
+        "purpose": "Evenly lit, mirrored oak tile repeating down the page (center top / 100% auto repeat-y) over the wood colour."
+      },
+      {
+        "name": "portraits",
+        "file": "public/plates/avatar-*.png",
+        "purpose": "Fictional barbers, circular crops, object-position 50% 20%."
+      },
+      {
+        "name": "headline-objects",
+        "file": "public/plates/headline-photo.png, public/plates/headline-clock-face.png",
+        "purpose": "Objects set into the headline; the clock face uses filter: contrast(1.2) at small sizes."
+      }
+    ],
+    "notYetBuilt": {
+      "publicBookingPage": {
+        "replaceable": [
+          "logo and name in the card head",
+          "tan, if ink on the accent stays >= 4.5:1",
+          "primary pill fill, if paper on the accent stays >= 4.5:1"
+        ],
+        "fixed": [
+          "Krub",
+          "ink text",
+          "paper surfaces",
+          "rule colours",
+          "radii",
+          "daylight shadow",
+          "focus outline",
+          "pending/refused colours",
+          "demo tag on fictional businesses"
+        ],
+        "open": [
+          "whether the oak ground appears behind business pages"
+        ]
+      },
+      "shadcnMapping": {
+        "--background": "paper",
+        "--foreground": "ink",
+        "--card": "card",
+        "--card-foreground": "ink",
+        "--popover": "card",
+        "--popover-foreground": "ink",
+        "--primary": "ink",
+        "--primary-foreground": "paper",
+        "--secondary": "tag",
+        "--secondary-foreground": "ink-soft",
+        "--muted": "tag",
+        "--muted-foreground": "ink-soft",
+        "--accent": "tan",
+        "--accent-foreground": "ink",
+        "--destructive": "refused-text",
+        "--border": "rule",
+        "--input": "rule-control",
+        "--ring": "ink",
+        "--sidebar": "card",
+        "--radius": "0.75rem",
+        "unmapped": [
+          ".dark block",
+          "--chart-1..5"
+        ]
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Pill Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single strong accent: near-black pill for the main action.",
+      "html": "<button class=\"ds-btn-primary\">Book 10:30</button>",
+      "css": ".ds-btn-primary { font-family: var(--font-krub), Krub, ui-sans-serif, system-ui, sans-serif; display: inline-flex; align-items: center; min-height: 3rem; padding: 0 1.5rem; border: 0; border-radius: 999px; background: #1c1813; color: #f7f0e9; font-size: 1.05rem; cursor: pointer; transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-primary:hover { background: #352e27; } .ds-btn-primary:focus-visible { outline: 2px solid #1c1813; outline-offset: 3px; }"
+    },
+    {
+      "name": "Quiet Pill Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Lower-commitment choice beside a primary pill.",
+      "html": "<a class=\"ds-btn-quiet\" href=\"#\">Start free</a>",
+      "css": ".ds-btn-quiet { font-family: var(--font-krub), Krub, ui-sans-serif, system-ui, sans-serif; display: inline-flex; align-items: center; min-height: 3rem; padding: 0 1.5rem; border: 1.5px solid #1c1813; border-radius: 999px; color: #1c1813; font-size: 1.05rem; text-decoration: none; transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-quiet:hover { background: rgb(28 24 19 / 0.06); } .ds-btn-quiet:focus-visible { outline: 2px solid #1c1813; outline-offset: 3px; }"
+    },
+    {
+      "name": "Nav Pill",
+      "kind": "nav",
+      "refersTo": "nav-pill",
+      "description": "Floating paper pill: wordmark, links, sign in, primary pill.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Main\"><a class=\"ds-nav-mark\" href=\"#\">Tendly</a><a class=\"ds-nav-link\" href=\"#\">Product</a><a class=\"ds-nav-link\" href=\"#\">Pricing</a><a class=\"ds-nav-link ds-nav-push\" href=\"#\">Sign in</a><a class=\"ds-nav-cta\" href=\"#\">Start free</a></nav>",
+      "css": ".ds-nav { font-family: var(--font-krub), Krub, ui-sans-serif, system-ui, sans-serif; display: flex; align-items: center; gap: 1.5rem; height: 3.5rem; padding: 0 0.4rem 0 1.1rem; border-radius: 999px; background: #f7f0e9; color: #1c1813; box-shadow: 0 5px 20px rgb(92 64 38 / 0.16); } .ds-nav-mark { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.01em; color: #1c1813; text-decoration: none; } .ds-nav-link { font-size: 0.95rem; color: #1c1813; text-decoration: none; text-underline-offset: 0.25em; } .ds-nav-link:hover { text-decoration: underline; } .ds-nav-push { margin-left: auto; } .ds-nav-cta { display: inline-flex; align-items: center; height: 2.6rem; padding: 0 1.1rem; border-radius: 999px; background: #1c1813; color: #f7f0e9; font-size: 0.95rem; font-weight: 500; text-decoration: none; transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-nav-cta:hover { background: #352e27; } .ds-nav a:focus-visible { outline: 2px solid #1c1813; outline-offset: 3px; }"
+    },
+    {
+      "name": "Slot Chips",
+      "kind": "chip",
+      "refersTo": "slot-chip",
+      "description": "Time slots as a radio group; tan when selected.",
+      "html": "<div class=\"ds-slots\" role=\"radiogroup\" aria-label=\"Time\"><label class=\"ds-slot\"><input type=\"radio\" name=\"ds-t\">10:00</label><label class=\"ds-slot\"><input type=\"radio\" name=\"ds-t\" checked>10:30</label><label class=\"ds-slot\"><input type=\"radio\" name=\"ds-t\">11:30</label></div>",
+      "css": ".ds-slots { font-family: var(--font-krub), Krub, ui-sans-serif, system-ui, sans-serif; display: grid; grid-template-columns: repeat(3, 6rem); gap: 0.5rem; } .ds-slot { position: relative; display: flex; align-items: center; justify-content: center; height: 2.75rem; border: 1.5px solid #ddd2c6; border-radius: 0.75rem; background: #fbf6f1; color: #1c1813; font-size: 1rem; font-variant-numeric: tabular-nums; cursor: pointer; transition: background-color 180ms ease-out, border-color 180ms ease-out; } .ds-slot input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; } .ds-slot:hover { border-color: #c9b9a6; } .ds-slot:has(input:checked) { border-color: #e3c9a9; background: #e3c9a9; } .ds-slot:has(input:focus-visible) { outline: 2px solid #1c1813; outline-offset: 2px; }"
+    },
+    {
+      "name": "Day Chips",
+      "kind": "chip",
+      "refersTo": "day-chip",
+      "description": "Weekday over a tabular date; an ink border marks the chosen day.",
+      "html": "<div class=\"ds-days\" role=\"radiogroup\" aria-label=\"Date\"><label class=\"ds-day\"><input type=\"radio\" name=\"ds-d\" checked><span class=\"ds-day-n\">Tue</span><span class=\"ds-day-d\">17</span></label><label class=\"ds-day\"><input type=\"radio\" name=\"ds-d\"><span class=\"ds-day-n\">Wed</span><span class=\"ds-day-d\">18</span></label></div>",
+      "css": ".ds-days { font-family: var(--font-krub), Krub, ui-sans-serif, system-ui, sans-serif; display: flex; gap: 0.4rem; } .ds-day { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 3.4rem; height: 3.6rem; border: 2px solid transparent; border-radius: 0.75rem; color: #1c1813; cursor: pointer; transition: border-color 180ms ease-out; } .ds-day input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; } .ds-day:hover { border-color: #c9b9a6; } .ds-day:has(input:checked) { border-color: #1c1813; } .ds-day:has(input:focus-visible) { outline: 2px solid #1c1813; outline-offset: 2px; } .ds-day-n { color: #4f4c46; font-size: 0.8rem; } .ds-day-d { font-size: 1.3rem; line-height: 1.1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Booking Card",
+      "kind": "card",
+      "refersTo": "booking-card",
+      "description": "Signature: paper card resting on oak, head with demo tag, radio-group columns.",
+      "html": "<form class=\"ds-card\"><div class=\"ds-card-head\"><h2>Northside Barbers</h2><span class=\"ds-tag\">Demo business, fictional</span></div><div class=\"ds-card-body\" role=\"radiogroup\" aria-label=\"Services\"><span class=\"ds-col-label\">Services</span><label class=\"ds-row\"><input type=\"radio\" name=\"ds-s\" checked><span>Haircut</span><span class=\"ds-meta\">30 min • $35</span></label><label class=\"ds-row\"><input type=\"radio\" name=\"ds-s\"><span>Beard trim</span><span class=\"ds-meta\">20 min • $20</span></label></div></form>",
+      "css": ".ds-card { font-family: var(--font-krub), Krub, ui-sans-serif, system-ui, sans-serif; max-width: 24rem; border-radius: 1.25rem; background: #f7eee8; color: #1c1813; box-shadow: -22px 22px 10px rgb(74 50 28 / 0.22), 0 2px 8px rgb(74 50 28 / 0.1); } .ds-card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem 0.75rem; padding: 1rem 1.1rem; border-bottom: 1px solid #e2d8cd; } .ds-card-head h2 { margin: 0; font-size: 1.2rem; font-weight: 400; } .ds-tag { padding: 0.2rem 0.6rem; border-radius: 999px; background: #ebe5da; color: #5f574f; font-size: 0.75rem; white-space: nowrap; } .ds-card-body { padding: 1rem 1.1rem 1.1rem; } .ds-col-label { display: block; margin-bottom: 0.6rem; color: #4f4c46; font-size: 0.9rem; } .ds-row { position: relative; display: flex; align-items: baseline; justify-content: space-between; min-height: 2.75rem; margin: 0 -0.6rem 0.25rem; padding: 0.55rem 0.6rem; border-radius: 0.75rem; font-size: 1.05rem; cursor: pointer; transition: background-color 180ms ease-out; } .ds-row input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; } .ds-row:hover { background: rgb(227 201 169 / 0.25); } .ds-row:has(input:checked) { background: rgb(227 201 169 / 0.45); } .ds-row:has(input:focus-visible) { outline: 2px solid #1c1813; outline-offset: 2px; } .ds-meta { color: #4f4c46; font-size: 0.9rem; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Inline Headline Object",
+      "kind": "custom",
+      "refersTo": "display",
+      "description": "A real object set into the display sentence: paper pill with a clock and the time.",
+      "html": "<p class=\"ds-hl\">and every day <span class=\"ds-clock\"><span class=\"ds-clock-face\"></span><span class=\"ds-clock-t\">10:30</span></span> calm.</p>",
+      "css": ".ds-hl { font-family: var(--font-krub), Krub, ui-sans-serif, system-ui, sans-serif; margin: 0; font-size: 2.6rem; font-weight: 400; line-height: 1.18; color: #1c1813; } .ds-clock { display: inline-flex; align-items: center; gap: 0.35rem; height: 0.95em; margin-inline: 0.12em; padding: 0 0.6rem 0 0.15rem; border-radius: 999px; background: #f7f0e9; vertical-align: -0.04em; box-shadow: 0 4px 12px rgb(74 50 28 / 0.16); } .ds-clock-face { width: 0.8em; height: 0.8em; border-radius: 50%; background: radial-gradient(circle, #fbf6f1 60%, #e2d8cd 62%); } .ds-clock-t { font-size: 0.95rem; line-height: 1; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Dark Proof Band with Paper Rows",
+      "kind": "card",
+      "refersTo": "night-band",
+      "description": "Shaded-room band; paper rows rest on it with status chips.",
+      "html": "<section class=\"ds-night\"><h3>Two people, one slot. One booking.</h3><div class=\"ds-prow\"><span class=\"ds-prow-l\">Tab 1</span><span>Tue 10:30</span><span class=\"ds-ok\">Booked</span></div><div class=\"ds-prow\"><span class=\"ds-prow-l\">Tab 2</span><span>Tue 10:30</span><span class=\"ds-no\">Slot just taken</span></div></section>",
+      "css": ".ds-night { font-family: var(--font-krub), Krub, ui-sans-serif, system-ui, sans-serif; display: grid; gap: 0.6rem; padding: 2rem 1.25rem; border-radius: 1.25rem; background: radial-gradient(60% 6rem at 45% 0, rgb(120 96 86 / 0.45), transparent), #2c2421; box-shadow: inset 0 2px 0 rgb(226 204 182 / 0.35); color: #f1e7dc; } .ds-night h3 { margin: 0 0 0.75rem; font-size: 1.35rem; font-weight: 400; line-height: 1.2; } .ds-prow { display: flex; align-items: center; gap: 1rem; min-height: 3.5rem; padding: 0.75rem 1.1rem; border-radius: 1rem; background: #f7eee8; color: #1c1813; box-shadow: -10px 14px 28px rgb(0 0 0 / 0.28); font-variant-numeric: tabular-nums; } .ds-prow-l { color: #4f4c46; font-size: 0.9rem; } .ds-ok, .ds-no { margin-left: auto; padding: 0.3rem 0.8rem; border-radius: 999px; font-size: 0.9rem; transition: background-color 450ms cubic-bezier(0.16, 1, 0.3, 1), color 450ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-ok { background: #e3c9a9; } .ds-no { background: #ead9d3; color: #7a2f22; }"
+    },
+    {
+      "name": "Paper Price List",
+      "kind": "card",
+      "refersTo": "price-list",
+      "description": "One paper panel on the oak with plans divided by a rule.",
+      "html": "<div class=\"ds-prices\"><div class=\"ds-plan\"><h3>Free</h3><p class=\"ds-fig\">$0 <span>forever</span></p><ul><li>Up to 3 staff</li><li>Up to 5 services</li></ul></div><div class=\"ds-plan\"><h3>Pro</h3><p class=\"ds-fig\">$19 <span>per month</span></p><ul><li>Up to 10 staff</li><li>Unlimited services and bookings</li></ul></div></div>",
+      "css": ".ds-prices { font-family: var(--font-krub), Krub, ui-sans-serif, system-ui, sans-serif; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-radius: 1.75rem; background: #f7eee8; color: #1c1813; box-shadow: -40px 38px 14px rgb(74 50 28 / 0.24), 0 3px 10px rgb(74 50 28 / 0.1); } .ds-plan { padding: 1.75rem; } .ds-plan + .ds-plan { border-left: 1px solid #e2d8cd; } .ds-plan h3 { margin: 0; color: #4f4c46; font-size: 1.1rem; font-weight: 400; } .ds-fig { margin: 0.5rem 0 1.5rem; font-size: 2.75rem; font-weight: 300; line-height: 1; font-variant-numeric: tabular-nums; } .ds-fig span { color: #4f4c46; font-size: 1rem; font-weight: 400; } .ds-plan ul { display: grid; gap: 0.7rem; margin: 0; padding: 0; list-style: none; font-size: 1.05rem; } .ds-plan li { padding-bottom: 0.7rem; border-bottom: 1px solid #e2d8cd; }"
+    },
+    {
+      "name": "Role Row",
+      "kind": "custom",
+      "refersTo": "row-name",
+      "description": "Wide link row on the oak with a sliding arrow.",
+      "html": "<a class=\"ds-role\" href=\"#\"><span class=\"ds-role-n\">Owner</span><span class=\"ds-role-w\">Billing, settings, the whole team</span><svg class=\"ds-role-a\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></a>",
+      "css": ".ds-role { font-family: var(--font-krub), Krub, ui-sans-serif, system-ui, sans-serif; display: grid; grid-template-columns: minmax(8rem, 0.6fr) 1fr auto; align-items: baseline; gap: 1.5rem; padding-block: 1.4rem; border-top: 1px solid rgb(28 24 19 / 0.18); border-bottom: 1px solid rgb(28 24 19 / 0.18); background: #e4d0b8; color: #1c1813; text-decoration: none; } .ds-role-n { font-size: 2rem; font-weight: 300; } .ds-role-w { color: #4a3f35; font-size: 1.05rem; } .ds-role-a { width: 1.5rem; height: 1.5rem; transition: translate 300ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-role:hover .ds-role-a { translate: 0.25rem 0; } .ds-role:focus-visible { outline: 2px solid #1c1813; outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Calm Morning at the Shop",
+    "overview": "Tendly is a full day that still feels unhurried. The page ground is a photograph of pale oak in soft window light; everything you touch is a warm off-white panel resting on that wood, lit from the upper right so its shadow falls long toward the lower left. Text is near-black, never pure black. The only strong accent is a near-black pill: the action. Colour comes from the material (oak, paper, a tan selection wash), not from a brand hue.\n\nThe system is light and roomy in persuasion surfaces, with one dark interlude: a deep brown band that reads like the shaded half of the room, onto whose top edge the window light still spills. Type is a single humanist sans (Krub) used light at large sizes and regular at reading sizes, with tabular figures wherever time or money is shown. Real interface is the illustration: a working booking card, slot rows, a price list on paper. There is no decorative chrome.\n\nStatus: built on one surface so far, the landing page `/` (Persuade). The public booking page `/b/[slug]` and the dashboard (Operate) are not yet built; guidance for them below is derived from the shipped tokens and is marked **(not yet built)**.",
+    "keyCharacteristics": [
+      "Daylit pale-oak ground; warm paper panels resting on it.",
+      "Directional lower-left daylight shadows on panels that rest on wood.",
+      "One strong accent: the near-black pill. Tan is a selection wash, never a call to action.",
+      "Krub only: light (300) for large display, regular (400) for reading and controls, medium/semibold only for the primary nav action and wordmark.",
+      "Real interface as imagery; photographs only inside pills and circles.",
+      "Honest demo labelling is part of the visual system, not an afterthought."
+    ],
+    "rules": [
+      {
+        "name": "The One Pill Rule",
+        "body": "The near-black pill is the only strong accent. A screen has one filled ink pill per decision point; secondary actions are the outlined quiet pill or an underlined link.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tan Is a Wash Rule",
+        "body": "Tan marks what is chosen, never what to do. It never fills a button and never carries text smaller than the slot label.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Pure Black Rule",
+        "body": "Ink is `#1c1813`; shadows are warm brown (`rgb(74 50 28)`, `rgb(60 40 22)`, `rgb(92 64 38)`). Neutral grey and `#000` text do not appear on wood or paper.",
+        "section": "colors"
+      },
+      {
+        "name": "The Light Large Rule",
+        "body": "Weight goes down as size goes up: 300 for headline, figure and row names; 400 for everything at reading size. 500 is reserved for the nav \"Start free\" pill and the footer mark; 600 for the wordmark.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Time Rule",
+        "body": "Every time, date number, duration, price and zone offset uses `font-variant-numeric: tabular-nums`.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Window Rule",
+        "body": "Every resting shadow falls to the lower left (negative x, positive y). Never mix directions on one screen; never use a hard zero-blur offset shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Rest or Float Rule",
+        "body": "Panels lying on the surface get the directional daylight shadow; chrome that floats above it (nav, inline pills) gets the centred ambient shadow. Controls inside a panel (chips, rows, buttons) are flat.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** rest paper panels on the oak with the lower-left daylight shadow (`-40px 38px 14px rgb(74 50 28 / 0.24)` plus a faint contact shadow).",
+      "**Do** keep one filled ink pill per decision; pair it with the quiet outlined pill or a text link.",
+      "**Do** use tan only for what is selected, and pair a tan fill with a second cue (an ink border, as the selected day does, or the chosen value echoed in the action label, as \"Book 10:30\" does).",
+      "**Do** set times, dates, durations and prices in tabular figures.",
+      "**Do** label every fictional business, person and booking (\"Demo business, fictional\") and state test mode where payments appear (\"Stripe in test mode\").",
+      "**Do** build radio choices as native radios inside a `role=\"radiogroup\"` with a visible label, ink focus outline and an `aria-live=\"polite\"` status line.",
+      "**Do** keep touch targets at 2.75rem or more on phones.",
+      "**Do** make the final state of any narrative animation the default render, and honour `prefers-reduced-motion`."
+    ],
+    "donts": [
+      "**Don't** use pure black, neutral grey or cool shadows; ink and shadows are warm brown.",
+      "**Don't** fill a button with tan or use tan as a call to action.",
+      "**Don't** cast shadows in more than one direction, or use hard zero-blur offset shadows.",
+      "**Don't** add uppercase tracked labels or small \"kicker\" lines above headings; headings start directly.",
+      "**Don't** put product screenshots in place of working interface; show the real component.",
+      "**Don't** invent customers, testimonials, logos, usage numbers or ratings; figures shown must be real plan limits or measured.",
+      "**Don't** reuse the `--u` comp scaling outside the landing hero; new surfaces use rem and clamp.",
+      "**Don't** put text over photographs other than the even oak, or place the window-lit hero photograph behind working data."
+    ]
+  }
+}

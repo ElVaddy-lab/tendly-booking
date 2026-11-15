@@ -1,0 +1,1033 @@
+/*
+ * Landing hero. Sizes are authored in comp pixels and scaled by --u so the
+ * first viewport keeps the approved composition at any desktop width.
+ * Narrow viewports switch to a stacked layout at the bottom of this file.
+ */
+.page {
+  --u: calc(100vw / 2752);
+  --ink: #1c1813;
+  --ink-soft: #4f4c46;
+  --ink-muted: #7c746d;
+  --paper: #f7f0e9;
+  --card: #f7eee8;
+  --rule: #e2d8cd;
+  --tan: #e3c9a9;
+  --tag: #ebe5da;
+  --night: #2c2421;
+  --night-text: #f1e7dc;
+
+  color: var(--ink);
+  /* Evenly lit oak, mirrored every other repeat so the grain never shows a seam. */
+  background: var(--tendly-wood) url("/plates/wood-tile.jpg") center top / 100% auto repeat-y;
+  font-family: var(--font-krub), ui-sans-serif, system-ui, sans-serif;
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  min-height: calc(1536 * var(--u));
+  padding-top: calc(39 * var(--u));
+}
+
+.ground {
+  z-index: -1;
+  object-fit: cover;
+  /* The window-lit hero photo dissolves into the evenly lit oak tile below it. */
+  mask-image: linear-gradient(to bottom, rgb(28 24 19) 82%, transparent);
+}
+
+/* Navigation pill */
+.nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: calc(2069 * var(--u));
+  height: calc(129 * var(--u));
+  margin-inline: auto;
+  padding-inline: calc(54 * var(--u)) calc(17 * var(--u));
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: 0 calc(10 * var(--u)) calc(40 * var(--u)) rgb(92 64 38 / 0.16);
+}
+
+.wordmark {
+  font-size: calc(49 * var(--u));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.navLinks {
+  position: absolute;
+  left: calc((1147 - 340) * var(--u));
+  display: flex;
+  gap: calc(64 * var(--u));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navLink {
+  font-size: max(0.8125rem, calc(33 * var(--u)));
+  color: var(--ink);
+  text-decoration: none;
+  text-underline-offset: 0.25em;
+}
+
+.navLink:hover {
+  text-decoration: underline;
+}
+
+.navEnd {
+  display: flex;
+  align-items: center;
+  gap: calc(41 * var(--u));
+  margin-left: auto;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(91 * var(--u));
+  padding-inline: calc(42 * var(--u));
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: max(0.8125rem, calc(31 * var(--u)));
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cta:hover {
+  background: #352e27;
+}
+
+/* Headline with inline objects */
+.headline {
+  margin: calc(150 * var(--u)) 0 0;
+  font-size: calc(112 * var(--u));
+  font-weight: 400;
+  line-height: calc(135 * var(--u));
+  letter-spacing: 0;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.line {
+  display: block;
+}
+
+.inlinePhoto {
+  display: inline-block;
+  width: calc(251 * var(--u));
+  height: calc(104 * var(--u));
+  margin-inline: calc(18 * var(--u)) calc(16 * var(--u));
+  border-radius: 999px;
+  overflow: hidden;
+  vertical-align: calc(-10 * var(--u));
+  box-shadow: 0 calc(8 * var(--u)) calc(24 * var(--u)) rgb(74 50 28 / 0.22);
+}
+
+.inlinePhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.clock {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(10 * var(--u));
+  height: calc(95 * var(--u));
+  margin-inline: calc(30 * var(--u)) calc(18 * var(--u));
+  padding: 0 calc(23 * var(--u)) 0 calc(7 * var(--u));
+  border-radius: 999px;
+  background: var(--paper);
+  vertical-align: calc(12 * var(--u));
+  box-shadow: 0 calc(8 * var(--u)) calc(24 * var(--u)) rgb(74 50 28 / 0.16);
+}
+
+.clockFace {
+  flex: none;
+  width: calc(81 * var(--u));
+  height: calc(81 * var(--u));
+  border-radius: 50%;
+  object-fit: cover;
+  /* The plate's thin hands fade at small sizes; deepen them without redrawing the clock. */
+  filter: contrast(1.2);
+}
+
+.clockTime {
+  font-size: calc(31 * var(--u));
+  line-height: 1;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.subline {
+  max-width: calc(1180 * var(--u));
+  margin: calc(28 * var(--u)) auto 0;
+  font-size: max(0.875rem, calc(34 * var(--u)));
+  line-height: calc(50 * var(--u));
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* Booking card */
+.card {
+  position: relative;
+  width: calc(1380 * var(--u));
+  margin: calc(66 * var(--u)) auto 0;
+  border-radius: calc(30 * var(--u));
+  background: var(--card);
+  box-shadow:
+    calc(-56 * var(--u)) calc(54 * var(--u)) calc(10 * var(--u)) rgb(74 50 28 / 0.36),
+    calc(-24 * var(--u)) calc(22 * var(--u)) calc(6 * var(--u)) rgb(74 50 28 / 0.14),
+    0 calc(4 * var(--u)) calc(14 * var(--u)) rgb(74 50 28 / 0.1);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: calc(100 * var(--u));
+  padding-inline: calc(31 * var(--u)) calc(32 * var(--u));
+  border-bottom: calc(2 * var(--u)) solid var(--rule);
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: max(0.875rem, calc(37 * var(--u)));
+  font-weight: 400;
+}
+
+.demoTag {
+  padding: calc(2 * var(--u)) calc(15 * var(--u));
+  border-radius: 999px;
+  background: var(--tag);
+  color: #5f574f;
+  font-size: max(0.75rem, calc(22 * var(--u)));
+}
+
+.cardBody {
+  display: grid;
+  grid-template-columns: calc(349 * var(--u)) calc(295 * var(--u)) calc(455 * var(--u)) 1fr;
+  min-height: calc(380 * var(--u));
+}
+
+.column {
+  margin: 0;
+  padding: calc(8 * var(--u)) calc(20 * var(--u)) calc(22 * var(--u)) calc(31 * var(--u));
+  min-width: 0;
+}
+
+.column + .column {
+  border-left: calc(2 * var(--u)) solid var(--rule);
+}
+
+.columnLabel {
+  display: block;
+  margin-bottom: calc(4 * var(--u));
+  color: var(--ink-soft);
+  font-size: max(0.85rem, calc(28 * var(--u)));
+}
+
+.option {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.option input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.service {
+  padding: calc(6 * var(--u)) max(6px, calc(10 * var(--u))) calc(8 * var(--u));
+  margin-left: min(-6px, calc(-10 * var(--u)));
+  margin-bottom: calc(4 * var(--u));
+  border-radius: calc(12 * var(--u));
+  transition: background-color 180ms ease-out;
+}
+
+.serviceName {
+  display: block;
+  font-size: max(0.8125rem, calc(30 * var(--u)));
+}
+
+.serviceMeta {
+  display: block;
+  margin-top: calc(4 * var(--u));
+  color: var(--ink-soft);
+  font-size: max(0.8rem, calc(24 * var(--u)));
+  font-variant-numeric: tabular-nums;
+}
+
+.barber {
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--u));
+  height: calc(64 * var(--u));
+  margin-left: calc(-8 * var(--u));
+  margin-bottom: calc(10 * var(--u));
+  padding-left: calc(8 * var(--u));
+  border-radius: 999px;
+  font-size: max(0.8125rem, calc(30 * var(--u)));
+  transition: background-color 180ms ease-out;
+}
+
+.avatar {
+  flex: none;
+  width: calc(59 * var(--u));
+  height: calc(59 * var(--u));
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* Head-and-shoulders portraits, framed from the top like the comp. */
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+
+.service:has(input:checked),
+.barber:has(input:checked) {
+  background: rgb(227 201 169 / 0.45);
+  /* Tan alone is ~1.4:1 against the card; the ink ring carries the state (WCAG 1.4.11). */
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.service:hover,
+.barber:hover {
+  background: rgb(227 201 169 / 0.25);
+}
+
+.option:has(input:focus-visible) {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.days {
+  display: flex;
+  gap: calc(6 * var(--u));
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: calc(76 * var(--u));
+  height: calc(81 * var(--u));
+  border: calc(3 * var(--u)) solid transparent;
+  border-radius: calc(12 * var(--u));
+  transition: border-color 180ms ease-out;
+}
+
+.day:has(input:checked) {
+  border-color: var(--ink);
+}
+
+.day:hover {
+  border-color: #c9b9a6;
+}
+
+.dayName {
+  color: var(--ink-soft);
+  font-size: max(0.75rem, calc(22 * var(--u)));
+}
+
+.dayNumber {
+  font-size: max(0.8125rem, calc(38 * var(--u)));
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(2, calc(108 * var(--u)));
+  gap: calc(10 * var(--u)) calc(12 * var(--u));
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(55 * var(--u));
+  border: calc(2 * var(--u)) solid #ddd2c6;
+  border-radius: calc(12 * var(--u));
+  background: #fbf6f1;
+  font-size: max(0.8125rem, calc(28 * var(--u)));
+  font-variant-numeric: tabular-nums;
+  transition: background-color 180ms ease-out, border-color 180ms ease-out;
+}
+
+.slot:hover {
+  border-color: #c9b9a6;
+}
+
+.slot:has(input:checked) {
+  border-color: var(--ink);
+  background: var(--tan);
+}
+
+.book {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(228 * var(--u));
+  height: calc(72 * var(--u));
+  margin-top: calc(26 * var(--u));
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font: inherit;
+  font-size: max(0.8125rem, calc(31 * var(--u)));
+  cursor: pointer;
+  transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.book:hover {
+  background: #352e27;
+}
+
+.status {
+  margin-top: calc(10 * var(--u));
+  color: var(--ink-soft);
+  font-size: max(0.8rem, calc(22 * var(--u)));
+}
+
+.roles {
+  margin: calc(60 * var(--u)) 0 0;
+  font-size: max(0.8125rem, calc(31 * var(--u)));
+  text-align: center;
+}
+
+.roles a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+/* The dark section that follows the hero */
+.next {
+  position: relative;
+  z-index: 1;
+  width: calc(2191 * var(--u));
+  margin: calc(-49 * var(--u)) auto 0;
+  padding: clamp(4rem, calc(170 * var(--u)), 7rem) clamp(1.25rem, calc(170 * var(--u)), 7rem)
+    clamp(4rem, calc(150 * var(--u)), 6rem);
+  border-radius: max(1.25rem, calc(60 * var(--u)));
+  /* Window light from the hero falls onto the top edge of the dark section. */
+  background:
+    radial-gradient(60% calc(160 * var(--u)) at 45% 0, rgb(120 96 86 / 0.45), transparent),
+    var(--night);
+  box-shadow: inset 0 calc(3 * var(--u)) 0 rgb(226 204 182 / 0.35);
+  color: var(--night-text);
+}
+
+/* Sections below the hero. Fluid sizes with sane floors and ceilings. */
+.sectionTitle,
+.sectionTitleDark {
+  max-width: 18ch;
+  margin: 0;
+  font-size: clamp(2.25rem, 1.2rem + 3.2vw, 4.25rem);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.sectionTitleDark {
+  max-width: 22ch;
+  color: var(--ink);
+}
+
+.sectionLead {
+  max-width: 52ch;
+  margin: 1.25rem 0 0;
+  color: #cbbcae;
+  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.3rem);
+  line-height: 1.55;
+}
+
+.proofs {
+  margin-top: clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid rgb(241 231 220 / 0.14);
+}
+
+.proof {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  gap: clamp(1.5rem, 5vw, 6rem);
+  align-items: center;
+  padding-block: clamp(2.25rem, 4vw, 3.5rem);
+  border-bottom: 1px solid rgb(241 231 220 / 0.14);
+}
+
+.proofTitle {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.35rem, 1.1rem + 0.8vw, 1.85rem);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.proofText p {
+  max-width: 50ch;
+  margin: 0;
+  color: #cbbcae;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* Small pieces of real interface on the dark band: warm paper on night. */
+.race,
+.zones,
+.notes {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.raceRow,
+.zones > div,
+.notes li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3.5rem;
+  padding: 0.75rem 1.1rem;
+  border-radius: 1rem;
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: -10px 14px 28px rgb(0 0 0 / 0.28);
+}
+
+.raceTab {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.raceSlot {
+  font-variant-numeric: tabular-nums;
+}
+
+.raceOk,
+.raceNo {
+  margin-left: auto;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+.raceOk,
+.raceNo,
+.raceWait {
+  transition:
+    background-color 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.raceOk {
+  background: var(--tan);
+}
+
+.raceWait {
+  margin-left: auto;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: #ece3d9;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.raceNo {
+  background: #ead9d3;
+  color: #7a2f22;
+}
+
+.zones > div {
+  justify-content: space-between;
+}
+
+.zones dt {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.zones dd {
+  margin: 0;
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.zones > div:first-child {
+  background: var(--tan);
+}
+
+.notes li {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.noteFrom {
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+
+/* Pricing, roles and footer sit straight on the page's wood. */
+.lower {
+  padding-bottom: 0.1px;
+}
+
+/* Pricing: one paper price list resting on the wood. */
+.pricing,
+.roles2 {
+  position: relative;
+  width: min(100% - 2.5rem, calc(1900 * var(--u)), 72rem);
+  margin-inline: auto;
+  padding-block: clamp(4.5rem, 9vw, 8rem) 0;
+}
+
+.priceList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: clamp(2rem, 4vw, 3rem);
+  border-radius: 1.75rem;
+  background: var(--card);
+  box-shadow:
+    -40px 38px 14px rgb(74 50 28 / 0.24),
+    0 3px 10px rgb(74 50 28 / 0.1);
+}
+
+.plan {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.75rem, 3.5vw, 3rem);
+}
+
+.plan + .plan {
+  border-left: 1px solid var(--rule);
+}
+
+.planName {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  font-weight: 400;
+}
+
+.planPrice {
+  margin: 0.5rem 0 1.5rem;
+  font-size: clamp(2.75rem, 2rem + 2.5vw, 4rem);
+  font-weight: 300;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.planPrice span {
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  font-weight: 400;
+}
+
+.planItems {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+  font-size: 1.05rem;
+}
+
+.planItems li {
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.planButton,
+.planButtonQuiet {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  min-height: 3rem;
+  margin-top: auto;
+  padding-inline: 1.5rem;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  text-decoration: none;
+  transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.planButton {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.planButton:hover {
+  background: #352e27;
+}
+
+.planButtonQuiet {
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+}
+
+.planButtonQuiet:hover {
+  background: rgb(28 24 19 / 0.06);
+}
+
+.priceNote {
+  margin: 1.25rem 0 0;
+  color: #4a3f35;
+  font-size: 0.9rem;
+}
+
+/* Roles: wide rows you can click straight into. */
+.roleList {
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgb(28 24 19 / 0.18);
+}
+
+.roleLink {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.6fr) 1fr auto;
+  align-items: baseline;
+  gap: 1.5rem;
+  padding-block: 1.4rem;
+  border-bottom: 1px solid rgb(28 24 19 / 0.18);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.roleArrow {
+  width: 1.5rem;
+  height: 1.5rem;
+  transition: translate 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.roleLink:hover .roleArrow {
+  translate: 0.25rem 0;
+}
+
+
+.roleName {
+  font-size: clamp(1.75rem, 1.3rem + 1.5vw, 2.5rem);
+  font-weight: 300;
+}
+
+.roleWhat {
+  color: #4a3f35;
+  font-size: 1.05rem;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem 2rem;
+  width: min(100% - 2.5rem, 72rem);
+  margin: clamp(4.5rem, 9vw, 7rem) auto 0;
+  padding-block: 2rem 2.5rem;
+  border-top: 1px solid rgb(28 24 19 / 0.18);
+  color: #4a3f35;
+  font-size: 0.9rem;
+}
+
+.footer p {
+  max-width: 70ch;
+  margin: 0;
+}
+
+.footerMark {
+  color: var(--ink);
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Below 1100px the comp's proportions get too small to read, so the hero restacks in rem. */
+@media (max-width: 1100px) {
+  .hero {
+    min-height: 0;
+    padding: 0.75rem 0.75rem 3.5rem;
+  }
+
+  .nav {
+    width: 100%;
+    height: 3.5rem;
+    padding-inline: 1.1rem 0.4rem;
+  }
+
+  .wordmark {
+    font-size: 1.35rem;
+  }
+
+  .navLinks {
+    display: none;
+  }
+
+  .navEnd {
+    gap: 1rem;
+  }
+
+  .navLink {
+    font-size: 0.9rem;
+  }
+
+  .cta {
+    height: 2.6rem;
+    padding-inline: 1.1rem;
+    font-size: 0.9rem;
+  }
+
+  .headline {
+    margin-top: 2.75rem;
+    padding-inline: 0.5rem;
+    font-size: clamp(2.3rem, 10vw, 3.4rem);
+    line-height: 1.18;
+    letter-spacing: -0.01em;
+  }
+
+  .line {
+    display: inline;
+  }
+
+  .line + .line::before {
+    content: " ";
+  }
+
+  .inlinePhoto {
+    width: 2.3em;
+    height: 0.95em;
+    margin-inline: 0.12em;
+    vertical-align: -0.08em;
+  }
+
+  .clock {
+    gap: 0.35rem;
+    height: 0.95em;
+    margin-inline: 0.12em;
+    padding: 0 0.6rem 0 0.15rem;
+    vertical-align: -0.04em;
+  }
+
+  .clockFace {
+    width: 0.8em;
+    height: 0.8em;
+  }
+
+  .clockTime {
+    font-size: 0.9rem;
+  }
+
+  .ground {
+    display: none;
+  }
+
+  .subline {
+    max-width: 34rem;
+    margin-top: 1.1rem;
+    padding-inline: 0.5rem;
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 40rem;
+    margin-top: 2rem;
+    border-radius: 1.25rem;
+    box-shadow:
+      -22px 22px 10px rgb(74 50 28 / 0.22),
+      0 2px 8px rgb(74 50 28 / 0.1);
+  }
+
+  .cardHead {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 0.4rem 0.75rem;
+    padding: 1rem 1.1rem;
+    border-bottom-width: 1px;
+  }
+
+  .cardTitle {
+    font-size: 1.35rem;
+  }
+
+  .demoTag {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .cardBody {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .column {
+    padding: 1rem 1.1rem 1.1rem;
+  }
+
+  .column + .column {
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .columnLabel {
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .service {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    min-height: 2.75rem;
+    margin: 0 -0.6rem 0.25rem;
+    padding: 0.55rem 0.6rem;
+    border-radius: 0.75rem;
+  }
+
+  .serviceName {
+    font-size: 1.05rem;
+  }
+
+  .serviceMeta {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  .barbers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .barber {
+    height: 2.9rem;
+    margin: 0;
+    padding-left: 0.3rem;
+    gap: 0.6rem;
+    font-size: 1.05rem;
+  }
+
+  .avatar {
+    width: 2.3rem;
+    height: 2.3rem;
+  }
+
+  .days {
+    justify-content: space-between;
+  }
+
+  .day {
+    width: 3.4rem;
+    height: 3.6rem;
+    border-width: 2px;
+    border-radius: 0.75rem;
+  }
+
+  .dayName {
+    font-size: 0.8rem;
+  }
+
+  .dayNumber {
+    font-size: 1.35rem;
+  }
+
+  .slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .slot {
+    height: 2.75rem;
+    border-width: 1.5px;
+    border-radius: 0.75rem;
+    font-size: 1.05rem;
+  }
+
+  .book {
+    width: 100%;
+    height: 3.1rem;
+    margin-top: 1rem;
+    font-size: 1.05rem;
+  }
+
+  .status {
+    font-size: 0.8rem;
+  }
+
+  .roles {
+    margin-top: 1.75rem;
+    padding-inline: 1rem;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .next {
+    width: calc(100% - 1.5rem);
+    margin-top: 0;
+  }
+
+  .proof {
+    grid-template-columns: 1fr;
+  }
+
+  .priceList {
+    grid-template-columns: 1fr;
+  }
+
+  .plan + .plan {
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .roleLink {
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem 1rem;
+  }
+
+  .roleWhat {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .roleArrow {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page * {
+    transition: none !important;
+  }
+}

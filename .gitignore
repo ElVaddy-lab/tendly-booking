@@ -52,3 +52,7 @@ next-env.d.ts
 
 # case screenshots and videos stay outside git
 /case/media/
+
+# impeccable: build artifacts and third-party reference screenshots stay local
+/.impeccable/build/
+/.impeccable/reference/
