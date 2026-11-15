@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
+import { io } from "next/cache";
 import { cookies } from "next/headers";
 
 import { getSupabasePublicEnv } from "@/lib/env";
@@ -12,6 +13,7 @@ import type { Database } from "@/types/database.generated";
  * proxy.ts only refreshes the session and is not an authorization boundary.
  */
 export async function createClient() {
+  await io();
   const cookieStore = await cookies();
   const { url, publishableKey } = getSupabasePublicEnv();
 

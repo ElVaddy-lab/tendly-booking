@@ -56,14 +56,24 @@ test("owner signs up, completes two-step onboarding, reaches dashboard, signs ou
   await page.getByLabel("First service").fill("Skin fade");
   await page.getByLabel("Duration (min)").fill("45");
   await page.getByLabel("Buffer (min)").fill("10");
+  await page.getByLabel("Price (USD)").fill("abc");
+  await page.getByRole("button", { name: "Finish setup" }).click();
+
+  await expect(page.getByText("Enter a valid price.")).toBeVisible();
+  await expect(page.getByLabel("Your display name")).toHaveValue("Andriy");
+  await expect(page.getByLabel("First service")).toHaveValue("Skin fade");
+  await expect(page.getByLabel("Duration (min)")).toHaveValue("45");
+  await expect(page.getByLabel("Buffer (min)")).toHaveValue("10");
+  await expect(page.getByLabel("Price (USD)")).toHaveValue("abc");
+
   await page.getByLabel("Price (USD)").fill("40");
   await page.getByRole("button", { name: "Finish setup" }).click();
 
   await expect(page).toHaveURL(/\/dashboard$/);
   await expect(page.getByRole("heading", { level: 1, name: businessName })).toBeVisible();
   await expect(page.getByText(`/b/${slug}`).first()).toBeVisible();
-  await expect(page.getByText("Andriy")).toBeVisible();
-  await expect(page.getByText("Skin fade")).toBeVisible();
+  await expect(page.getByText("Andriy").first()).toBeVisible();
+  await expect(page.getByText("Skin fade").first()).toBeVisible();
   await expectNoA11yViolations(page);
 
   await page.getByRole("button", { name: "Sign out" }).click();

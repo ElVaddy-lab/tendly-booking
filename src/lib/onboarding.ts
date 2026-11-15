@@ -19,6 +19,23 @@ type WeeklyHoursSummary = Pick<
   "id" | "staff_id" | "weekday" | "start_time" | "end_time"
 >;
 
+type StaffServiceSummary = Pick<
+  Database["public"]["Tables"]["staff_services"]["Row"],
+  "staff_id" | "service_id"
+>;
+type TimeOffSummary = Pick<
+  Database["public"]["Tables"]["time_off"]["Row"],
+  "id" | "staff_id" | "period" | "reason"
+>;
+type MemberSummary = Pick<
+  Database["public"]["Tables"]["business_members"]["Row"],
+  "user_id" | "role" | "created_at"
+>;
+type InvitationSummary = Pick<
+  Database["public"]["Tables"]["business_invitations"]["Row"],
+  "id" | "role" | "staff_id" | "expires_at" | "created_at"
+>;
+
 export type OnboardingContext = {
   userId: string;
   email: string | null;
@@ -31,6 +48,13 @@ export type OnboardingContext = {
   services: ServiceSummary[];
   weeklyHours: WeeklyHoursSummary[];
   hasServiceAndSchedule: boolean;
+};
+
+export type DashboardData = OnboardingContext & {
+  staffServices: StaffServiceSummary[];
+  timeOff: TimeOffSummary[];
+  members: MemberSummary[];
+  invitations: InvitationSummary[];
 };
 
 /**
@@ -107,6 +131,61 @@ export async function getOnboardingContext(): Promise<OnboardingContext> {
     weeklyHours: hoursList,
     hasServiceAndSchedule:
       staffList.length > 0 && serviceList.length > 0 && hoursList.length > 0,
+  };
+}
+
+/**
+ * Loads full dashboard admin data for the signed-in user's business.
+ */
+export async function getDashboardData(): Promise<DashboardData> {
+  const ctx = await getOnboardingContext();
+
+  if (!ctx.business || !ctx.membership) {
+    return {
+      ...ctx,
+      staffServices: [],
+      timeOff: [],
+      members: [],
+      invitations: [],
+    };
+  }
+
+  const supabase = await createClient();
+  const businessId = ctx.business.id;
+  const isOwner = ctx.membership.role === "owner";
+
+  const [{ data: staffServices }, { data: timeOff }, { data: members }, { data: invitations }] =
+    await Promise.all([
+      supabase
+        .from("staff_services")
+        .select("staff_id, service_id")
+        .eq("business_id", businessId),
+      supabase
+        .from("time_off")
+        .select("id, staff_id, period, reason")
+        .eq("business_id", businessId)
+        .order("period", { ascending: true }),
+      supabase
+        .from("business_members")
+        .select("user_id, role, created_at")
+        .eq("business_id", businessId)
+        .order("created_at", { ascending: true }),
+      isOwner
+        ? supabase
+            .from("business_invitations")
+            .select("id, role, staff_id, expires_at, created_at")
+            .eq("business_id", businessId)
+            .is("accepted_at", null)
+            .order("created_at", { ascending: false })
+        : Promise.resolve({ data: [] as InvitationSummary[] }),
+    ]);
+
+  return {
+    ...ctx,
+    staffServices: staffServices ?? [],
+    timeOff: timeOff ?? [],
+    members: members ?? [],
+    invitations: invitations ?? [],
   };
 }
 

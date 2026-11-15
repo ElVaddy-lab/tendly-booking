@@ -31,6 +31,32 @@ isOneToOne: false
       referencedColumns: ["business_id","id"]
     }
                   ]
+                },"business_invitations": {
+                  Row: {
+                    "accepted_at": string | null,"accepted_by": string | null,"business_id": string,"created_at": string,"created_by": string | null,"expires_at": string,"id": string,"role": Database["public"]['Enums']["member_role"],"staff_id": string | null,"token_hash": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "accepted_at"?: string | null,"accepted_by"?: string | null,"business_id": string,"created_at"?: string,"created_by"?: string | null,"expires_at"?: string,"id"?: string,"role": Database["public"]['Enums']["member_role"],"staff_id"?: string | null,"token_hash": string
+                  }
+                  Update: {
+                    "accepted_at"?: string | null,"accepted_by"?: string | null,"business_id"?: string,"created_at"?: string,"created_by"?: string | null,"expires_at"?: string,"id"?: string,"role"?: Database["public"]['Enums']["member_role"],"staff_id"?: string | null,"token_hash"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "business_invitations_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "business_invitations_business_id_staff_id_fkey"
+      columns: ["business_id","staff_id"]
+isOneToOne: false
+      referencedRelation: "staff"
+      referencedColumns: ["business_id","id"]
+    }
+                  ]
                 },"business_members": {
                   Row: {
                     "business_id": string,"created_at": string,"role": Database["public"]['Enums']["member_role"],"user_id": string
@@ -177,7 +203,12 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "available_slots":
+            "accept_business_invitation":
+{ Args: { "p_display_name"?: string,"p_token": string }; Returns: {
+              "business_id": string,"role": Database["public"]['Enums']["member_role"]
+            }[]
+                           },
+"available_slots":
 { Args: { "p_business_id": string,"p_from"?: string,"p_service_id": string,"p_staff_id"?: string,"p_to"?: string }; Returns: {
               "staff_id": string,"starts_at": string
             }[]
@@ -194,6 +225,19 @@ isOneToOne: false
                            },
 "create_business":
 { Args: { "p_name": string,"p_slug": string,"p_timezone": string }; Returns: string
+                           },
+"create_business_invitation":
+{ Args: { "p_business_id": string,"p_role": Database["public"]['Enums']["member_role"],"p_staff_id"?: string }; Returns: {
+              "expires_at": string,"invitation_id": string,"token": string
+            }[]
+                           },
+"get_business_invitation":
+{ Args: { "p_token": string }; Returns: {
+              "business_id": string,"business_name": string,"business_slug": string,"expires_at": string,"invitation_id": string,"is_valid": boolean,"role": Database["public"]['Enums']["member_role"],"staff_id": string,"staff_name": string
+            }[]
+                           },
+"set_staff_weekly_hours":
+{ Args: { "p_business_id": string,"p_hours": Json,"p_staff_id": string }; Returns: undefined
                            }
           }
           Enums: {

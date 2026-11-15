@@ -8,6 +8,7 @@ colors:
   ink-on-wood: "#4a3f35"
   paper: "#f7f0e9"
   card: "#f7eee8"
+  surface-active: "#ffffff"
   slot-fill: "#fbf6f1"
   rule: "#e2d8cd"
   rule-control: "#ddd2c6"
@@ -16,9 +17,6 @@ colors:
   tag: "#ebe5da"
   tag-text: "#5f574f"
   wood: "#e4d0b8"
-  night: "#2c2421"
-  night-text: "#f1e7dc"
-  night-muted: "#cbbcae"
   pending: "#ece3d9"
   refused-bg: "#ead9d3"
   refused-text: "#7a2f22"
@@ -162,21 +160,22 @@ components:
 
 Tendly is a full day that still feels unhurried. The page ground is a photograph of pale oak in soft window light; everything you touch is a warm off-white panel resting on that wood, lit from the upper right so its shadow falls long toward the lower left. Text is near-black, never pure black. The only strong accent is a near-black pill: the action. Colour comes from the material (oak, paper, a tan selection wash), not from a brand hue.
 
-The system is light and roomy in persuasion surfaces, with one dark interlude: a deep brown band that reads like the shaded half of the room, onto whose top edge the window light still spills. Type is a single humanist sans (Krub) used light at large sizes and regular at reading sizes, with tabular figures wherever time or money is shown. Real interface is the illustration: a working booking card, slot rows, a price list on paper. There is no decorative chrome.
+The entire surface world uses warm light materials (pale oak ground, warm `#f7eee8` / `#f7f0e9` paper resting panels, and crisp `#ffffff` strictly on the active form, dialog, or focus widget/card). Type is a single humanist sans (Krub) used light at large sizes and regular at reading sizes, with tabular figures wherever time or money is shown. Real interface is the illustration: a working booking card, live slot-race and timezone widgets, a comparison price ledger, and an interactive role previewer. There is no decorative chrome.
 
-Status: built on one surface so far, the landing page `/` (Persuade). The public booking page `/b/[slug]` and the dashboard (Operate) are not yet built; guidance for them below is derived from the shipped tokens and is marked **(not yet built)**.
+Status: shipped on landing `/`, gateways (`/sign-in`, `/sign-up`, `/invite/[token]`), onboarding (`/onboarding`), and the operations workbench (`/dashboard`). The public booking page `/b/[slug]` and `/demo/*` routes are **(not yet built)**; guidance for `/b/[slug]` below is marked **(not yet built)**.
 
 **Key Characteristics:**
-- Daylit pale-oak ground; warm paper panels resting on it.
-- Directional lower-left daylight shadows on panels that rest on wood.
-- One strong accent: the near-black pill. Tan is a selection wash, never a call to action.
-- Krub only: light (300) for large display, regular (400) for reading and controls, medium/semibold only for the primary nav action and wordmark.
+- Daylit pale-oak ground on persuasion and gateway surfaces; warm `#f7f0e9` / `#f7eee8` paper on workspace/onboarding chrome.
+- Crisp `#ffffff` used sparingly to spotlight the active form, focus panel, highlighted plan column (`Pro`), or open editor drawer.
+- Directional lower-left daylight shadows on panels that rest on wood or warm paper.
+- One strong accent: the near-black pill. Tan (`#e3c9a9` with `#1c1813` ink) is a selection wash, active step badge, or quiet workbench submit accent — never competing with the main decision pill.
+- Krub only: light (300) for large display/section headings, regular (400) for reading and controls, medium/semibold only for badges, active actions, and the wordmark.
 - Real interface as imagery; photographs only inside pills and circles.
 - Honest demo labelling is part of the visual system, not an afterthought.
 
 ## Colors
 
-A warm, low-chroma material palette: oak, paper and near-black ink, with tan as the single selection colour and a deep brown for the one dark band.
+A warm, low-chroma material palette: oak, warm paper (`#f7eee8` / `#f7f0e9`), crisp `#ffffff` focus surfaces, and near-black ink, with tan as the selection colour and subtle accent.
 
 ### Primary
 - **Workshop Ink** (`ink`): All text on paper and wood, the primary pill, the selected-day border, focus outlines (`:focus-visible` is a 2px ink outline), `accent-color` and `::selection` text. 15.4:1 on card.
@@ -203,7 +202,7 @@ A warm, low-chroma material palette: oak, paper and near-black ink, with tan as 
 ### Named Rules
 **The One Pill Rule.** The near-black pill is the only strong accent. A screen has one filled ink pill per decision point; secondary actions are the outlined quiet pill or an underlined link.
 
-**The Tan Is a Wash Rule.** Tan marks what is chosen, never what to do. It never fills a button and never carries text smaller than the slot label.
+**The Tan Is a Wash Rule.** On persuasion and booking screens, tan marks what is chosen rather than competing with the primary ink pill (`It never carries text smaller than the slot label`); in the dashboard workbench, quiet tan submit pills (`#e3c9a9` with `#1c1813` ink) are permitted inside active `#ffffff` forms so `Copy booking link` remains the sole `#1c1813` anchor.
 
 **The No Pure Black Rule.** Ink is `#1c1813`; shadows are warm brown (`rgb(74 50 28)`, `rgb(92 64 38)`). Neutral grey and `#000` text do not appear on wood or paper.
 
@@ -292,14 +291,20 @@ The product itself, used as the hero. A card-paper panel with the daylight shado
 ### Inline headline objects
 Small real things set into the display sentence, sitting on the baseline: a photograph cropped into a pill (251×104u) and a paper pill holding a clock face and a tabular time ("10:30"). Each carries the inline-object shadow. On phones they shrink to em units (photo 2.3em × 0.95em, clock 0.95em tall) so they ride the text size. Use at most two per headline, and only objects that are literally the subject of the words next to them.
 
-### Dark proof band
-A deep-brown rounded band that overlaps the end of the hero by 49u, with the window-edge glow at its top. Holds a light headline in night-text, a muted lead, and proof rows: text left, a small piece of real interface right, rows divided by 14% night-text hairlines. The interface pieces are paper rows (`paper-row`): card paper, 1rem radius, the on-night daylight shadow, label in soft ink and value in ink.
+### Proof plates on oak (`#product`)
+Three vertical warm-paper architectural plates (`#f7eee8`) resting directly on oak with the panel daylight shadow, each framing a crisp `#ffffff` live interface widget above concise feature copy (concurrent slot race with `Tab 1` / `Tab 2`, three-timezone comparison, Telegram + client `.ics` notifications).
 
-### Paper price list
-One card-paper panel resting on the wood with the panel daylight shadow and 1.75rem corners; plans side by side divided by a vertical paper rule (stacked on phones). Each plan: soft-ink name, light tabular figure with a small unit, a list of items separated by paper rules, then a pill button pinned to the bottom (quiet for Free, primary for Pro). An honest note in ink-on-wood follows the panel.
+### Barbershop menu ledger (`#pricing`)
+One warm-paper comparison ledger (`#f7eee8`) resting on oak with the panel daylight shadow: aligned specification labels on the left, `Free` on `#f7eee8` in the middle, and `Pro` elevated in a crisp `#ffffff` inner card on the right with a tan `"Up to 10 chairs"` badge and primary ink pill.
 
-### Role rows
-Wide link rows directly on the wood, separated by 18% ink hairlines: light row-name, a one-line description in ink-on-wood, and a 1.5px-stroke arrow icon that slides 0.25rem right on hover (300ms expo-out). On phones the description wraps under the name and the arrow centres on the right.
+### Interactive role switcher (`#roles`)
+Split switcher with three stacked role selector buttons (`Owner`, `Manager`, `Staff` — selected on `#ffffff`, others on `#f7eee8`) paired with a live `#ffffff` miniature workspace preview and one primary `"Enter demo as <Role> →"` ink pill.
+
+### Auth, Onboarding, Dashboard & Invite (`1.C` surface hierarchy)
+- **`/sign-in` & `/sign-up`:** Asymmetric two-page warm-paper spread (`#f7eee8`) on oak — left editorial demo dossier page (`portfolio demo`, `09:00` tan chip, 24h demo reset note) and right crisp `#ffffff` active auth sheet, topped by a `#f7f0e9` floating nav pill.
+- **`/onboarding`:** Architectural progress rail (`#f7eee8`) showing Steps 1 & 2 cleanly beside an inset crisp `#ffffff` active setup sheet on `#f7f0e9` ground, with `#f7eee8` header strip.
+- **`/dashboard`:** Sticky `#f7eee8` left shop rail (monogram, booking link, single primary `Copy booking link` ink pill, section nav, Free-plan quota meter) beside a `#f7f0e9` two-column workbench where resting panels sit on `#f7eee8` and open editors/add-forms sit on `#ffffff` with tan/ink submit pills.
+- **`/invite/[token]`:** Tactile two-part team pass on oak — upper `#f7eee8` pass header with shop seal, role badge, booking path, and expiry; lower `#ffffff` active sheet with optional required display name and `Accept invitation` ink pill.
 
 ### Inputs / Fields
 No text fields are built yet. **(not yet built)** Derive from the slot chip: slot-paper fill, control-rule border, control radius, rule-hover on hover, ink 2px focus outline; error text in refused-text.
@@ -358,7 +363,7 @@ Operate screens are dense and flat: paper background, hairline rules, controls f
 
 ### Don't:
 - **Don't** use pure black, neutral grey or cool shadows; ink and shadows are warm brown.
-- **Don't** fill a button with tan or use tan as a call to action.
+- **Don't** fill landing or gateway primary CTAs with tan or let tan compete with the near-black anchor pill (workbench add-forms may use quiet `#e3c9a9` submit pills with dark ink as noted in the `1.C` workbench spec).
 - **Don't** cast shadows in more than one direction, or use hard zero-blur offset shadows.
 - **Don't** add uppercase tracked labels or small "kicker" lines above headings; headings start directly.
 - **Don't** put product screenshots in place of working interface; show the real component.

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { resolvePostAuthPath } from "@/lib/onboarding";
+import { sanitizeInviteNextPath } from "@/lib/redirect";
 import { createClient } from "@/lib/supabase/server";
 import { isTurnstileTestMode, verifyTurnstileToken } from "@/lib/turnstile";
 
@@ -71,6 +72,11 @@ export async function signInAction(
     return { error: "Invalid email or password." };
   }
 
+  const nextPath = sanitizeInviteNextPath(formData.get("next"));
+  if (nextPath) {
+    redirect(nextPath);
+  }
+
   const destination = await resolvePostAuthPath(supabase, data.user.id);
   redirect(destination);
 }
@@ -120,7 +126,8 @@ export async function signUpAction(
     return { error: "An account with this email already exists. Sign in instead." };
   }
 
-  redirect("/onboarding");
+  const nextPath = sanitizeInviteNextPath(formData.get("next"));
+  redirect(nextPath ?? "/onboarding");
 }
 
 export async function signOutAction(): Promise<void> {

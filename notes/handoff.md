@@ -15,6 +15,8 @@
 | `3618e8f` | Каркас: Next.js, Supabase SSR-клієнти, `proxy.ts`, Vitest, Playwright + axe, pgTAP, CI (GitHub Actions) |
 | `35f57a2` | Ядро БД: схема, RLS, `available_slots`, `create_booking`, exclusion constraint, 93 pgTAP-перевірки |
 | `54dcb88` | Лендинг `/` і дизайн-система (`PRODUCT.md`, `DESIGN.md`, `.impeccable/design.json`) |
+| `f9a7d60` | Етап 5: `/sign-in`, `/sign-up`, двокроковий `/onboarding`, `create_business` і `complete_onboarding` RPC |
+| *Етап 6* | Адмінка `/dashboard`, інвайти `/invite/[token]`, візуальне узгодження всіх 7 не-Hero блоків із референсами `1.C` |
 
 Щоб перенести проєкт в інше середовище, потрібен або push у GitHub (лише за командою користувача), або копія папки.
 
@@ -25,13 +27,15 @@
 - ✅ 3. Каркас.
 - ✅ 4. Схема, RLS, слоти, `create_booking`.
 - ✅ Поза планом: дизайн-система і лендинг (процес impeccable, див. нижче).
-- ⏭️ **Наступний — 5. Онбординг**: `/sign-in`, `/sign-up` (Supabase Auth + Turnstile), RPC створення бізнесу (назва, slug, часовий пояс) — **спершу pgTAP-тести**, потім перша послуга й розклад.
-- Далі 6 (адмінка), 7 (публічна сторінка `/b/[slug]` — тут кнопка «Book» на лендингу має почати створювати справжній запис), 8–16 за планом.
+- ✅ 5. Онбординг: `/sign-in`, `/sign-up` (Supabase Auth + Turnstile), `create_business` і `complete_onboarding` RPC, перша послуга й розклад.
+- ✅ 6. Адмінка `/dashboard` (послуги, персонал, розклад, time off), інвайти `/invite/[token]` і редизайн не-Hero блоків під палітру `1.C`.
+- ⏭️ **Наступний — 7. Публічна сторінка бронювання (`/b/[slug]`)**: вибір послуги, майстра, дати й слота через `available_slots`, форма з Turnstile → `create_booking`, підтвердження + `.ics` (і підключення кнопки «Book» на лендингу).
+- Далі 8–16 за планом.
 
 ## База даних (`supabase/`)
 
-- Міграції: `20261115100000_core_schema.sql`, `…100100_rls_policies.sql`, `…100200_available_slots.sql`, `…100300_create_booking.sql`.
-- Тести: `supabase/tests/database/000…040_*.test.sql` (93 перевірки, включно з DST для Kyiv і New York).
+- Міграції: `20261115100000_core_schema.sql`, `…100100_rls_policies.sql`, `…100200_available_slots.sql`, `…100300_create_booking.sql`, `…100400_onboarding.sql`, `…100500_admin_and_invites.sql`.
+- Тести: `supabase/tests/database/000…060_*.test.sql` (154 перевірки, включно з DST для Kyiv і New York, онбордингом, адмінкою й інвайтами).
 - Ключові рішення: `bookings.blocked_until` (кінець буфера зберігається, бо `timestamptz + interval` не IMMUTABLE); exclusion constraint `(staff_id, [starts_at, blocked_until)) where status = 'confirmed'`; хелпери RLS у схемі `private` (`business_ids_with_role`, `own_staff_ids`); анонім не має привілеїв на таблиці з персональними даними; `create_booking` — security definer, будь-яка відмова → `P0001 slot_unavailable`, токен керування — лише SHA-256 у БД.
 - Свідомо відкладено: RPC створення бізнесу (етап 5), ліміти тарифу (11), гонка двох вкладок — Playwright (12), «змінені години» з додатковим часом.
 
@@ -56,9 +60,9 @@
 ```bash
 pnpm lint
 pnpm typecheck
-pnpm test:run          # 14 Vitest
-pnpm test:db           # 93 pgTAP (потрібен локальний Supabase)
-pnpm test:e2e          # 6 Playwright + axe
+pnpm test:run          # 53 Vitest
+pnpm test:db           # 154 pgTAP (потрібен локальний Supabase)
+pnpm test:e2e          # 12 Playwright + axe
 ```
 
 ## Налаштування нового середовища

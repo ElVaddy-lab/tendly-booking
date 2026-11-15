@@ -1,4 +1,22 @@
 .page {
+  --tendly-ink: #1c1813;
+  --tendly-ink-hover: #352e27;
+  --tendly-ink-soft: #4f4c46;
+  --tendly-ink-placeholder: #766c61;
+  --tendly-paper: #f7f0e9;
+  --tendly-card: #f7eee8;
+  --tendly-surface-active: #ffffff;
+  --tendly-slot-fill: #fbf6f1;
+  --tendly-rule: #e2d8cd;
+  --tendly-rule-control: #d5c8b8;
+  --tendly-rule-hover: #b8a690;
+  --tendly-tan: #e3c9a9;
+  --tendly-tag: #ebe5da;
+  --tendly-tag-text: #4f4c46;
+  --tendly-wood: #e4d0b8;
+  --tendly-refused-bg: #ead9d3;
+  --tendly-refused-text: #7a2f22;
+
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -11,7 +29,7 @@
   width: min(100%, 72rem);
   height: 3.5rem;
   margin-inline: auto;
-  padding-inline: 1.5rem 0.5rem;
+  padding-inline: 1.5rem 0.65rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -28,20 +46,30 @@
   text-decoration: none;
 }
 
-.navLink {
+.backLink {
   display: inline-flex;
   align-items: center;
-  min-height: 2.75rem;
+  gap: 0.45rem;
+  min-height: 2.5rem;
   padding-inline: 1rem;
   border-radius: 999px;
-  font-size: 0.95rem;
+  border: 1px solid var(--tendly-rule);
+  background: var(--tendly-card);
   color: var(--tendly-ink);
+  font-size: 0.9rem;
   text-decoration: none;
-  text-underline-offset: 0.25em;
+  transition: border-color 180ms ease-out, background-color 180ms ease-out;
 }
 
-.navLink:hover {
-  text-decoration: underline;
+.backLink:hover {
+  border-color: var(--tendly-rule-hover);
+  background: var(--tendly-slot-fill);
+}
+
+.backIcon {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: none;
 }
 
 .main {
@@ -50,50 +78,139 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-block: clamp(2rem, 6vw, 4rem);
+  padding-block: clamp(2rem, 5vw, 4rem);
 }
 
-.card {
-  width: min(100%, 28rem);
+.spread {
+  width: min(100%, 58rem);
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  align-items: stretch;
+  gap: 1.5rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: 1.75rem;
+  border: 1px solid rgb(28 24 19 / 0.08);
   background: var(--tendly-card);
-  border-radius: 1.25rem;
-  border: 1px solid var(--tendly-rule);
   box-shadow:
-    -22px 22px 10px rgb(74 50 28 / 0.18),
-    0 2px 8px rgb(74 50 28 / 0.08);
-  overflow: hidden;
+    -36px 36px 14px rgb(74 50 28 / 0.22),
+    0 3px 10px rgb(74 50 28 / 0.1);
 }
 
-.cardHead {
+.spreadLeft {
+  min-width: 0;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: space-between;
-  gap: 0.75rem;
-  padding: 1.25rem 1.5rem 1rem;
-  border-bottom: 1px solid var(--tendly-rule);
+  gap: 2rem;
+  padding: clamp(0.75rem, 2vw, 1.5rem) clamp(0.5rem, 1.5vw, 1.25rem);
 }
 
-.title {
-  margin: 0;
-  font-size: clamp(1.35rem, 1.1rem + 0.8vw, 1.75rem);
-  font-weight: 400;
-  line-height: 1.2;
+.spreadTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
 }
 
 .demoTag {
   flex: none;
-  padding: 0.2rem 0.65rem;
+  padding: 0.22rem 0.7rem;
   border-radius: 999px;
   background: var(--tendly-tag);
   color: var(--tendly-tag-text);
   font-size: 0.8rem;
+  font-weight: 500;
 }
 
-.form {
+.shopLabel {
+  color: var(--tendly-ink-soft);
+  font-size: 0.9rem;
+}
+
+.editorialBlock {
   display: flex;
   flex-direction: column;
-  gap: 1.15rem;
-  padding: 1.35rem 1.5rem 1.5rem;
+  gap: 1rem;
+}
+
+.editorialHeadline {
+  margin: 0;
+  font-size: clamp(2.15rem, 1.4rem + 2vw, 3.1rem);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--tendly-ink);
+  text-wrap: balance;
+}
+
+.headlineLine {
+  display: block;
+}
+
+.headlinePair {
+  white-space: normal;
+}
+
+.timeChip {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.05;
+  padding: 0.08em 0.45em;
+  border-radius: 999px;
+  background: var(--tendly-tan);
+  color: var(--tendly-ink);
+  font-size: 0.72em;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  vertical-align: 0.05em;
+}
+
+.editorialCopy {
+  margin: 0;
+  max-width: 34ch;
+  color: var(--tendly-ink-soft);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.resetBox {
+  padding: 0.85rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--tendly-rule);
+  background: var(--tendly-paper);
+}
+
+.resetBox p {
+  margin: 0;
+  color: var(--tendly-ink-soft);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.card {
+  width: 100%;
+  background: var(--tendly-surface-active);
+  border-radius: 1.25rem;
+  border: 1px solid var(--tendly-rule);
+  box-shadow: 0 8px 24px rgb(74 50 28 / 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cardHead {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1.5rem 1.75rem 0;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.2rem + 0.8vw, 1.9rem);
+  font-weight: 400;
+  line-height: 1.2;
 }
 
 .lead {
@@ -101,6 +218,13 @@
   color: var(--tendly-ink-soft);
   font-size: 0.95rem;
   line-height: 1.5;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  padding: 1.35rem 1.75rem 1.65rem;
 }
 
 .field {
@@ -125,6 +249,11 @@
   font-size: 1rem;
   font-family: inherit;
   transition: border-color 180ms ease-out;
+}
+
+.input::placeholder {
+  color: var(--tendly-ink-placeholder);
+  opacity: 1;
 }
 
 .input:hover {
@@ -185,14 +314,70 @@
 }
 
 .footerLink {
-  margin: 1.25rem 0 0;
+  margin: 0.25rem 0 0;
   text-align: center;
-  font-size: 0.95rem;
-  color: var(--tendly-ink);
+  font-size: 0.92rem;
+  color: var(--tendly-ink-soft);
 }
 
 .footerLink a {
   color: var(--tendly-ink);
   font-weight: 500;
+  text-decoration: underline;
   text-underline-offset: 0.25em;
+}
+
+.skeletonLine {
+  display: block;
+  border-radius: 999px;
+  background: var(--tendly-tag);
+}
+
+.skeletonLabel {
+  width: 4.5rem;
+  height: 0.8rem;
+}
+
+.skeletonInput {
+  display: block;
+  width: 100%;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--tendly-rule);
+  background: var(--tendly-slot-fill);
+}
+
+.skeletonSubmit {
+  display: block;
+  width: 100%;
+  height: 3rem;
+  border-radius: 999px;
+  background: var(--tendly-tag);
+}
+
+@media (max-width: 860px) {
+  .spread {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .spreadLeft {
+    gap: 1.25rem;
+    padding: 0.5rem 0.25rem 0;
+  }
+
+  .cardHead,
+  .form {
+    padding-inline: 1.25rem;
+  }
+}
+
+@media (max-width: 27.5em) {
+  .headlineLine {
+    display: inline;
+  }
+
+  .headlinePair {
+    white-space: normal;
+  }
 }

@@ -41,15 +41,19 @@ export function RaceDemo() {
 
   return (
     <div ref={ref} className={styles.race} aria-hidden="true" data-phase={phase}>
-      <div className={styles.raceRow}>
-        <span className={styles.raceTab}>Tab 1</span>
-        <span className={styles.raceSlot}>Tue 10:30</span>
-        <span className={phase === "pending" ? styles.raceWait : styles.raceOk}>{first}</span>
+      <div className={styles.raceTabsHeader}>
+        <span className={styles.raceTabPillActive}>Tab 1</span>
+        <span className={styles.raceTabPill}>Tab 2</span>
       </div>
-      <div className={styles.raceRow}>
-        <span className={styles.raceTab}>Tab 2</span>
-        <span className={styles.raceSlot}>Tue 10:30</span>
-        <span className={phase === "done" ? styles.raceNo : styles.raceWait}>{second}</span>
+      <div className={styles.raceRows}>
+        <div className={styles.raceRow}>
+          <span className={styles.raceSlot}>Tue 10:30</span>
+          <span className={phase === "pending" ? styles.raceWait : styles.raceOk}>{first}</span>
+        </div>
+        <div className={styles.raceRow}>
+          <span className={styles.raceSlot}>Tue 10:30</span>
+          <span className={phase === "done" ? styles.raceNo : styles.raceWait}>{second}</span>
+        </div>
       </div>
     </div>
   );

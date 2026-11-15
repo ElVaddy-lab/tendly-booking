@@ -69,8 +69,9 @@ export const businessStepSchema = z.object({
     .refine(isValidIanaTimeZone, "Choose a valid IANA time zone."),
 });
 
-const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
+export const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function toMinutes(hhmm: string): number {
   const [hours, minutes] = hhmm.split(":").map(Number);

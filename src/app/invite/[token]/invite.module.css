@@ -1,0 +1,306 @@
+.page {
+  --tendly-ink: #1c1813;
+  --tendly-ink-hover: #352e27;
+  --tendly-ink-soft: #4f4c46;
+  --tendly-ink-placeholder: #766c61;
+  --tendly-paper: #f7f0e9;
+  --tendly-card: #f7eee8;
+  --tendly-surface-active: #ffffff;
+  --tendly-slot-fill: #fbf6f1;
+  --tendly-rule: #e2d8cd;
+  --tendly-rule-control: #d5c8b8;
+  --tendly-rule-hover: #b8a690;
+  --tendly-tan: #e3c9a9;
+  --tendly-tag: #ebe5da;
+  --tendly-tag-text: #4f4c46;
+  --tendly-wood: #e4d0b8;
+  --tendly-refused-bg: #ead9d3;
+  --tendly-refused-text: #7a2f22;
+
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  color: var(--tendly-ink);
+  background: var(--tendly-wood) url("/plates/wood-tile.jpg") center top / 100% auto repeat-y;
+}
+
+.header {
+  border-bottom: 1px solid var(--tendly-rule);
+  background: var(--tendly-card);
+}
+
+.nav {
+  width: min(100% - 2.5rem, 72rem);
+  min-height: 3.75rem;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.wordmark {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--tendly-ink);
+  text-decoration: none;
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding-inline: 0.9rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  color: var(--tendly-ink);
+  text-decoration: none;
+  text-underline-offset: 0.25em;
+}
+
+.navLink:hover {
+  text-decoration: underline;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 6vw, 4rem) 1.25rem;
+}
+
+.card {
+  width: min(100%, 29rem);
+  border-radius: 1.35rem;
+  border: 1px solid rgb(28 24 19 / 0.1);
+  background: var(--tendly-surface-active);
+  box-shadow:
+    -28px 28px 14px rgb(74 50 28 / 0.22),
+    0 3px 10px rgb(74 50 28 / 0.1);
+  overflow: hidden;
+}
+
+.passHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.65rem;
+  padding: 2rem 1.75rem 1.5rem;
+  border-bottom: 1px solid var(--tendly-rule);
+  background: var(--tendly-card);
+}
+
+.seal {
+  display: grid;
+  place-items: center;
+  width: 3.85rem;
+  height: 3.85rem;
+  border-radius: 50%;
+  background: var(--tendly-tan);
+  border: 1px solid rgb(28 24 19 / 0.28);
+  padding: 0.22rem;
+}
+
+.seal span {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid rgb(28 24 19 / 0.35);
+  color: var(--tendly-ink);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.title {
+  margin: 0.15rem 0 0;
+  font-size: clamp(1.45rem, 1.15rem + 0.8vw, 1.85rem);
+  font-weight: 400;
+  line-height: 1.18;
+  color: var(--tendly-ink);
+}
+
+.roleTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  background: var(--tendly-tan);
+  color: var(--tendly-ink);
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.passMetaGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.15rem;
+}
+
+.passMeta,
+.passExpiry {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--tendly-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.passSheet {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem 1.75rem;
+  background: var(--tendly-surface-active);
+}
+
+.formBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lead {
+  margin: 0;
+  color: var(--tendly-ink-soft);
+  font-size: 0.94rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--tendly-ink);
+}
+
+.input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--tendly-rule-control);
+  background: var(--tendly-slot-fill);
+  color: var(--tendly-ink);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 180ms ease-out;
+}
+
+.input::placeholder {
+  color: var(--tendly-ink-placeholder);
+  opacity: 1;
+}
+
+.input:hover {
+  border-color: var(--tendly-rule-hover);
+}
+
+.error {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.75rem;
+  background: var(--tendly-refused-bg);
+  color: var(--tendly-refused-text);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.submit,
+.submitLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 3rem;
+  padding-inline: 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--tendly-ink);
+  color: var(--tendly-paper);
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.submit:hover:not(:disabled),
+.submitLink:hover {
+  background: var(--tendly-ink-hover);
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.secondaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.85rem;
+  padding-inline: 1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--tendly-ink);
+  background: transparent;
+  color: var(--tendly-ink);
+  font-size: 0.95rem;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 180ms ease-out;
+}
+
+.secondaryLink:hover {
+  background: rgb(28 24 19 / 0.06);
+}
+
+.accountFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem 0.75rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--tendly-rule);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--tendly-ink-soft);
+}
+
+.inlineSignOutForm {
+  display: inline;
+}
+
+.switchAccountLink {
+  display: inline;
+  padding: 0.2rem 0;
+  border: 0;
+  background: none;
+  color: var(--tendly-ink);
+  font: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  cursor: pointer;
+}
+
+.switchAccountLink:hover {
+  color: var(--tendly-ink-hover);
+}
