@@ -204,6 +204,11 @@ async function DashboardContent({
             </p>
           </div>
           <div className={styles.headerMetaRow}>
+            {business.is_demo ? (
+              <span className={styles.metaChip}>
+                Demo business — fictional · Resets nightly
+              </span>
+            ) : null}
             <span className={styles.metaChip}>{business.timezone}</span>
             <span className={styles.metaChip}>
               Every {business.slot_step_minutes} min · {business.min_notice_minutes} min notice

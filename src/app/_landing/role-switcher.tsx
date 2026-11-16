@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
+
+import { enterDemoAction } from "@/app/demo/[role]/actions";
 
 import styles from "./landing.module.css";
 
@@ -32,7 +33,7 @@ const ROLES: readonly RoleConfig[] = [
     permissionsLabel: "Shop owner · Stripe billing & team invites",
     highlights: [
       { label: "Booking page", value: "/b/northside-barbers" },
-      { label: "Active plan", value: "Pro · Up to 10 chairs" },
+      { label: "Starting plan", value: "Free · 3/3 chairs" },
       { label: "Team invites", value: "Manager & staff links" },
     ],
     scheduleRows: [
@@ -159,19 +160,25 @@ export function RoleSwitcher() {
         </div>
 
         <div className={styles.rolePreviewActions}>
-          <Link className={styles.rolePrimaryCta} href={`/demo/${active.id}`}>
-            Enter demo as {active.name}
-            <ArrowRight className={styles.roleArrow} aria-hidden="true" strokeWidth={1.5} />
-          </Link>
+          <form action={enterDemoAction}>
+            <input type="hidden" name="role" value={active.id} />
+            <button type="submit" className={styles.rolePrimaryCta}>
+              Enter demo as {active.name}
+              <ArrowRight className={styles.roleArrow} aria-hidden="true" strokeWidth={1.5} />
+            </button>
+          </form>
 
           <p className={styles.roleQuickLinks}>
-            Direct demo links:{" "}
+            Direct demo sign-in:{" "}
             {otherRoles.map((role, index) => (
               <span key={role.id}>
                 {index > 0 ? " · " : ""}
-                <Link href={`/demo/${role.id}`} className={styles.roleInlineLink}>
-                  {role.name}
-                </Link>
+                <form action={enterDemoAction} className={styles.roleInlineForm}>
+                  <input type="hidden" name="role" value={role.id} />
+                  <button type="submit" className={styles.roleInlineLink}>
+                    {role.name}
+                  </button>
+                </form>
               </span>
             ))}
           </p>

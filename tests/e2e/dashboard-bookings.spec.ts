@@ -83,11 +83,12 @@ test("owner manages Day/Week calendar, manual walk-ins, statuses, and customer d
     .getByRole("radiogroup", { name: "Barber" })
     .getByRole("radio", { name: /Andriy/ })
     .check();
-  await visitorPage
+  const targetDateRadio = visitorPage
     .getByRole("radiogroup", { name: "Date" })
     .locator('label[data-empty="false"] input[type="radio"]')
-    .nth(3)
-    .check();
+    .nth(3);
+  const targetDateKey = await targetDateRadio.inputValue();
+  await targetDateRadio.check();
   await visitorPage
     .getByRole("radiogroup", { name: "Time" })
     .getByRole("radio", { name: /^09:00/ })
@@ -117,14 +118,6 @@ test("owner manages Day/Week calendar, manual walk-ins, statuses, and customer d
     visitorPage.getByRole("heading", { name: /Booking confirmed/ }),
   ).toBeVisible();
   await visitorContext.close();
-
-  // Compute local YYYY-MM-DD for Day +3 in Europe/Kyiv matching visitor selection
-  const targetDateKey = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Kyiv",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000));
 
   // 3. Owner reloads dashboard, reviews Day & Week grid, creates manual booking + checks overlap
   await page.reload({ waitUntil: "networkidle" });

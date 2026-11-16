@@ -361,6 +361,9 @@ isOneToOne: false
               "booking_id": string,"ends_at": string,"staff_id": string,"starts_at": string
             }[]
                            },
+"reset_demo_and_expired_data":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
 "revoke_staff_ics_token":
 { Args: { "p_business_id": string,"p_staff_id": string }; Returns: undefined
                            },

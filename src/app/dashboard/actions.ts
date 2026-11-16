@@ -4,6 +4,7 @@ import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { mapDemoRestrictionError } from "@/lib/demo-mode";
 import { readClientRequestInfo } from "@/lib/request-info";
 import { parsePriceToCents, TIME_PATTERN, UUID_PATTERN } from "@/lib/slug";
 import {
@@ -958,6 +959,10 @@ export async function createTelegramLinkCodeAction(
 
   const row = Array.isArray(data) ? data[0] : data;
   if (error || !row?.link_code) {
+    const demoRestriction = mapDemoRestrictionError(error);
+    if (demoRestriction) {
+      return { error: demoRestriction };
+    }
     if (error?.code === "42501") {
       return { error: "You can only connect Telegram for your own staff profile." };
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 
 import type { Day } from "@/lib/demo-days";
@@ -26,6 +27,7 @@ const times = ["10:00", "10:30", "11:30", "13:00", "14:30"] as const;
 
 
 export function BookingCard({ days }: { days: Day[] }) {
+  const router = useRouter();
   const uid = useId();
   const [service, setService] = useState<string | null>(null);
   const [barber, setBarber] = useState<string | null>(null);
@@ -40,7 +42,8 @@ export function BookingCard({ days }: { days: Day[] }) {
       setStatus("Choose a service first.");
       return;
     }
-    setStatus(`Live booking opens with the public booking page. You picked ${time}.`);
+    setStatus(`Opening live booking page for Northside Barbers (${time})...`);
+    router.push("/b/northside-barbers");
   }
 
   return (

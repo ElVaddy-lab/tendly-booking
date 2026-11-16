@@ -58,9 +58,17 @@ insert into public.bookings (id, business_id, staff_id, service_id, starts_at, e
 set local role anon;
 set local "request.jwt.claims" to '{"role":"anon"}';
 
-select is((select count(*)::int from public.businesses), 2, 'anon sees public business profiles');
-select is((select count(*)::int from public.staff), 3, 'anon sees active staff only');
-select is((select count(*)::int from public.services), 2, 'anon sees active services only');
+select is((select count(*)::int from public.businesses where not is_demo), 2, 'anon sees public business profiles');
+select is(
+  (select count(*)::int from public.staff where business_id in ('b0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000002')),
+  3,
+  'anon sees active staff only'
+);
+select is(
+  (select count(*)::int from public.services where business_id in ('b0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000002')),
+  2,
+  'anon sees active services only'
+);
 -- No table privilege at all for anon on private data: permission denied, not just zero rows.
 select throws_ok($$select count(*) from public.bookings$$, '42501', null, 'anon has no access to bookings');
 select throws_ok($$select count(*) from public.business_members$$, '42501', null, 'anon has no access to members');
@@ -98,7 +106,11 @@ select throws_ok(
   $$insert into public.services (business_id, name, duration_min) values ('b0000000-0000-0000-0000-000000000002', 'Intrusion', 20)$$,
   '42501', null, 'owner cannot add a service to another business'
 );
-select is((select count(*)::int from public.services), 4, 'owner sees inactive services of own business too');
+select is(
+  (select count(*)::int from public.services where business_id in ('b0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000002')),
+  4,
+  'owner sees inactive services of own business too'
+);
 
 reset role;
 

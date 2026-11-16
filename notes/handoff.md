@@ -19,8 +19,8 @@
 | `c46277f` | Етап 6: адмінка `/dashboard`, інвайти `/invite/[token]`, візуальне узгодження всіх 7 не-Hero блоків із референсами `1.C` |
 | `f0671db` | Етап 7: публічна сторінка `/b/[slug]`: 4-колонкова дошка + перфорований квиток + `.ics`, міграція `20261115100600_public_booking.sql`, Turnstile, rate limit |
 | `6b2a9af` | Етапи 8–9: `/manage/[token]` + календар `/dashboard` (день/тиждень, статуси, ручний запис, GDPR-видалення ПД клієнта), міграції `…100700`–`…100800` |
-| *Етап 10* | Сповіщення (`notification_outbox` + тригери), Telegram-бот (`/api/webhooks/telegram`, `/start <код>`), Supabase Cron + `/api/cron/reminders`, `.ics`-підписка (`/api/cal/[token]`), міграція `20261115100900_notifications_and_ics.sql` |
-| *Етап 11* | Stripe-білінг (`stripe:setup`, Checkout, Customer Portal, `/api/webhooks/stripe` із сирим підписом і `stripe_events`), ліміти Free/Pro у БД та `/dashboard`, міграція `20261115101000_billing_and_limits.sql` |
+| `e6901a8` | Етапи 10–11: сповіщення (`notification_outbox` + Telegram + `pg_cron` + `.ics`-підписка) і Stripe-білінг (`stripe:setup`, Checkout/Portal, вебхук, ліміти Free/Pro), міграції `…100900`–`…101000` |
+| *Етапи 12–13* | Якість (гонка 2 вкладок, `America/New_York` DST, axe, Lighthouse, `notes/stage12-checklist.md`) + Демо-бізнес `Northside Barbers`, `/demo/[role]`, `/api/cron/demo-reset`, `seed.sql` і E2E демо-обмежень (`…101100`) |
 
 Щоб перенести проєкт в інше середовище, потрібен або push у GitHub (лише за командою користувача), або копія папки.
 
@@ -38,13 +38,15 @@
 - ✅ 9. Календар адмінки (`/dashboard` календар день / тиждень по працівниках): денна й тижнева сітки з відображенням робочих змін, time off, перекриття блоків і ролевою ізоляцією (`Owner`/`Manager` бачать усіх, `Staff` — лише свій `staff_id`); фільтрований список записів і переходи `confirmed → completed / no_show / cancelled` (`update_booking_status`); ручний/walk-in запис без вимоги `min_notice_minutes` і email з поверненням `/manage/[token]` (`create_manual_booking`); двокрокове видалення персональних даних клієнта (`erase_booking_customer_data` лише для `Owner`/`Manager`).
 - ✅ 10. Сповіщення (`notification_outbox` → Telegram-бот), Supabase Cron та `.ics`-підписка: прив'язка Telegram-чату одноразовим `/start <код>` через вебхук `/api/webhooks/telegram`; тригери черги на створення, перенесення й скасування; щоденний дайджест `enqueue_daily_staff_reminders` (`pg_cron`, ідемпотентний `dedupe_key`) та `/api/cron/reminders` із `CRON_SECRET`; приватна `.ics`-підписка `/api/cal/[token]` із ротацією/відкликанням і маскуванням стертих даних; колонковий захист `telegram_chat_id` і хешів у `public.staff`.
 - ✅ 11. Stripe: продукт і ціна $19/міс у sandbox (`scripts/stripe-setup.mjs` / `pnpm stripe:setup`), Stripe Checkout і Customer Portal (`createBillingCheckoutSession` / `createBillingPortalSession`), вебхук `/api/webhooks/stripe` (перевірка сирого підпису, дедуплікація в `stripe_events`, канонічний `subscriptions.retrieve`, без підняття тарифу по query-параметру `?billing=success`), DB-тригери лімітів (`Free`: 3 staff / 5 services / 100 bookings/міс; `Pro`: 10 staff / ∞ services / ∞ bookings) і UI-розділ `Plan & billing` + квоти в `/dashboard`.
-- ⏭️ **Наступний — 12. Якість**: E2E (включно з гонкою двох вкладок), axe, Lighthouse, ручний чекліст оплати й DST.
-- Далі 13–16 за планом.
+- ✅ 12. Якість: ізоляція зовнішніх ключів і `pnpm build && pnpm start` у `playwright.config.ts`, DST unit-тести (`booking-slots.test.ts`), E2E гонки двох вкладок (`Promise.all`) і поясу `America/New_York` + `/invite/[token]` axe WCAG 2.2 AA (`concurrency-and-dst.spec.ts`), аудит Lighthouse 13.6 та ручний чекліст `notes/stage12-checklist.md`.
+- ✅ 13. Демо-бізнес і нічне скидання: міграція `20261115101100_demo_and_reset.sql` + `supabase/seed.sql` для вигаданого `Northside Barbers` (`Europe/Kyiv`, Free 3/5), 3 демо-акаунти (`owner`/`manager`/`staff`), DB-тригери захисту демо-бізнесу/учасників/`auth.users` і блокування Telegram, `pg_cron` `reset_demo_and_expired_data()` + `/api/cron/demo-reset` (скасовує тестові Stripe-підписки й видаляє бізнеси/користувачів >24 год), `/demo/[role]`, 1-click вхід із `#roles`, перехід Hero-картки на `/b/northside-barbers` та E2E (`demo-mode.spec.ts`).
+- ⏭️ **Наступний — 14. Деплой**: Vercel + hosted Supabase + вебхук Stripe sandbox + Supabase Cron (лише за командою користувача).
+- Далі 15–16 за планом.
 
 ## База даних (`supabase/`)
 
-- Міграції: `20261115100000_core_schema.sql`, `…100100_rls_policies.sql`, `…100200_available_slots.sql`, `…100300_create_booking.sql`, `…100400_onboarding.sql`, `…100500_admin_and_invites.sql`, `…100600_public_booking.sql`, `…100700_manage_booking.sql`, `…100800_dashboard_bookings.sql`, `…100900_notifications_and_ics.sql`, `…101000_billing_and_limits.sql`.
-- Тести: `supabase/tests/database/000…110_*.test.sql` (255 перевірок, включно з DST для Kyiv і New York, онбордингом, адмінкою, інвайтами, публічним бронюванням, керуванням за токеном, адмін-календарем, сповіщеннями / Telegram / `.ics`-підписками та Stripe-підписками й лімітами тарифів). Після E2E-прогонів перед `pnpm test:db` запускати `pnpm db:reset`.
+- Міграції: `20261115100000_core_schema.sql`, `…100100_rls_policies.sql`, `…100200_available_slots.sql`, `…100300_create_booking.sql`, `…100400_onboarding.sql`, `…100500_admin_and_invites.sql`, `…100600_public_booking.sql`, `…100700_manage_booking.sql`, `…100800_dashboard_bookings.sql`, `…100900_notifications_and_ics.sql`, `…101000_billing_and_limits.sql`, `…101100_demo_and_reset.sql` (+ `supabase/seed.sql`).
+- Тести: `supabase/tests/database/000…120_*.test.sql` (278 перевірок, включно з DST для Kyiv і New York, онбордингом, адмінкою, інвайтами, публічним бронюванням, керуванням за токеном, адмін-календарем, сповіщеннями / Telegram / `.ics`-підписками, Stripe-підписками й лімітами тарифів, а також демо-обмеженнями та `reset_demo_and_expired_data`). Після E2E-прогонів перед `pnpm test:db` запускати `pnpm db:reset`.
 - Ключові рішення: `bookings.blocked_until` (кінець буфера зберігається, бо `timestamptz + interval` не IMMUTABLE); exclusion constraint `(staff_id, [starts_at, blocked_until)) where status = 'confirmed'`; хелпери RLS у схемі `private` (`business_ids_with_role`, `own_staff_ids`); анонім не має привілеїв на таблиці з персональними даними; `create_booking` — security definer, будь-яка відмова → `P0001 slot_unavailable`, токен керування — лише SHA-256 у БД.
 - Свідомо відкладено: RPC створення бізнесу (етап 5), ліміти тарифу (реалізовано на етапі 11), гонка двох вкладок — Playwright (12), «змінені години» з додатковим часом.
 
@@ -59,8 +61,7 @@
 
 ## Відомі відкриті пункти
 
-- Кнопка «Book» у Hero-картці лендингу `/` поки працює на демо-даних (`supabase/seed.sql` для `northside-barbers` створюється на етапі 13; реальний запис уже працює на `/b/[slug]`).
-- Немає маршрутів швидкого входу `/demo/owner|manager|staff` (етап 13; `/sign-in` і `/sign-up` уже працюють). Тексти «One click signs you in…» і «Demo data resets every night» мають стати правдою до деплою.
+- Hero-картка лендингу `/` і перемикач `#roles` уже підключені до реального `northside-barbers` (`supabase/seed.sql`, `/demo/[role]`, `/b/northside-barbers`).
 - Дві дрібні розбіжності з макетом на `/`: обідок циферблата торкається верху кружечка; людина на аватарі «Anyone» трохи праворуч (чисто виправляється перекадруванням пластини).
 - Між 861 і 1100px головна сторінка вже у вертикальній версії — перевірити на реальному планшеті.
 
@@ -69,9 +70,9 @@
 ```bash
 pnpm lint
 pnpm typecheck
-pnpm test:run          # 99 Vitest
-pnpm db:reset && pnpm test:db  # 255 pgTAP (потрібен локальний Supabase; db:reset чистить рядки після E2E)
-pnpm test:e2e          # 26 Playwright + axe (chromium + mobile-chromium)
+pnpm test:run          # 105 Vitest
+pnpm db:reset && pnpm test:db  # 278 pgTAP (потрібен локальний Supabase; db:reset чистить рядки після E2E)
+pnpm test:e2e          # 30 Playwright + axe (chromium + mobile-chromium)
 ```
 
 ## Налаштування нового середовища
