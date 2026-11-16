@@ -126,7 +126,7 @@ pg_cron ─► /api/cron/reminders, /api/cron/demo-reset (секрет у заг
 
 ### Упаковка
 - [x] 14. Деплой: Vercel + hosted Supabase + вебхук Stripe sandbox + Supabase Cron. **Деплой і пуш — лише за командою користувача.** (2026-11-16: hosted Supabase `tendly-demo` (`xuzipblvmhjfvxlbxpfi`, `eu-central-1`), `supabase db push --include-seed` (12 міграцій + `Northside Barbers`), Vault + 4 активні `pg_cron`/`pg_net` задачі (`tendly-drain-notifications-http` `*/5 * * * *`, `tendly-nightly-demo-reset-http` `55 2 * * *`), Stripe Sandbox webhook `we_1UcRSRACAxpxeFMcdGKVYVre` + Customer Portal `bpc_1UcRSTACAxpxeFMc4QNf1pyg`, Telegram `setWebhook` з секретом, Vercel prod `https://tendly-booking.vercel.app` (`12` env-змінних, виправлено гідратацію `#418` у `role-switcher.tsx`); вручну в Supabase Dashboard лишається вимкнути Confirm email і задати `Site URL` / `Redirect URLs`.)
-- [ ] 15. README англійською (архітектура, модель безпеки, як запустити локально з Stripe CLI), ADR (часові пояси, конфлікти, білінг), відео до 5 хв, `case/` (скріншоти поза git, як у Tessel).
+- [x] 15. README англійською (архітектура, модель безпеки, як запустити локально з Stripe CLI), ADR (часові пояси, конфлікти, білінг), відео до 5 хв, `case/` (скріншоти поза git, як у Tessel). (2026-11-16: `README.md` англійською, 3 ADR у `docs/adr/001..003-*.md`, кейс `case/case.md` + сценарій 5-хв відео `case/video-script.md` і 9 скріншотів із продакшну в `case/media/` поза git; запис голосу/відео за сценарієм робить користувач.)
 - [ ] 16. Портфоліо: Upwork (+ спеціалізований профіль React / Next.js), Freelancehunt (одне зображення), vadymdev; за бажанням — проєкт Project Catalog «Booking MVP on Next.js + Supabase».
 
 ## Пізніше (за бажанням)
