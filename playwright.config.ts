@@ -19,6 +19,9 @@ export default defineConfig({
   reporter: process.env.CI ? [["html"], ["github"]] : "list",
   use: {
     baseURL,
+    // Visitors default to the demo shop's zone so slot labels match the specs on
+    // any machine (CI runs in UTC). DST specs override this per context.
+    timezoneId: "Europe/Kyiv",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
