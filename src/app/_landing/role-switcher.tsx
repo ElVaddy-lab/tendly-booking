@@ -168,7 +168,7 @@ export function RoleSwitcher() {
             </button>
           </form>
 
-          <p className={styles.roleQuickLinks}>
+          <div className={styles.roleQuickLinks}>
             Direct demo sign-in:{" "}
             {otherRoles.map((role, index) => (
               <span key={role.id}>
@@ -181,7 +181,7 @@ export function RoleSwitcher() {
                 </form>
               </span>
             ))}
-          </p>
+          </div>
         </div>
       </div>
     </div>
