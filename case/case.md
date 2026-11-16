@@ -2,6 +2,7 @@
 
 **Живе демо:** https://tendly-booking.vercel.app  
 **Публічний запис демо-барбершопу:** https://tendly-booking.vercel.app/b/northside-barbers  
+**Код:** https://github.com/ElVaddy-lab/tendly-booking  
 **Швидкий вхід за ролями:** `/demo/owner` · `/demo/manager` · `/demo/staff`
 
 > Демо-стенд: барбершоп *Northside Barbers*, майстри, послуги та стартові записи — вигадані. Оплата працює виключно у **Stripe Sandbox (test mode)** тестовою карткою `4242 ...`. Реєстрація відвідувачів працює без підтвердження email, створені бізнеси й акаунти старші за 24 год видаляються, а демо-дані скидаються щоночі (`02:55` / `03:00 UTC`).
@@ -57,14 +58,14 @@
 
 ## Стек
 
-Next.js 16.4.6 (App Router, Cache Components, `proxy.ts`), React 19, TypeScript, Tailwind CSS 4, shadcn/ui (Radix) · Supabase (Postgres, Auth SSR, RLS, pgTAP, `pg_cron`, `pg_net`) · Stripe Sandbox SDK & webhooks · Telegram Bot API · Vercel · Vitest, Playwright, axe-core.
+Next.js 16.4.6 (App Router, Cache Components, `proxy.ts`), React 19, TypeScript, Tailwind CSS 4, CSS Modules, lucide-react · Supabase (Postgres, Auth SSR, RLS, pgTAP, `pg_cron`, `pg_net`) · Stripe Sandbox SDK & webhooks · Telegram Bot API · Vercel · Vitest, Playwright, axe-core.
 
 ## Виміряна якість
 
 - **База даних (pgTAP):** 13 тест-сьютів, **278 перевірок** (`supabase db lint` — 0 помилок), включно з DST у Києві та Нью-Йорку, RLS-ізоляцією ролей, білінг-лімітами й демо-блокуваннями.
 - **Unit-тести (Vitest):** 14 файлів, **105 тестів** (логіка слотів, DST, `.ics`, Stripe-вебхуки, `verifyCronSecret`, демо-режим).
 - **E2E + Доступність (Playwright + axe-core):** **30 тестів** на десктопі та мобільному (`390×844`), зокрема одночасна гонка двох вкладок (`Promise.all`), вебхуки Stripe Sandbox, Telegram/`.ics` й обмеження `Owner / Manager / Staff` — **0 порушень WCAG 2.2 AA**.
-- **Lighthouse 13.6 (`/`):** замір на етапі 12 — `mobile` Performance `99`, Accessibility `100`, Best Practices `100`, SEO `100`; `desktop` Performance `100`, Accessibility `100`, SEO `100`. На живому продакшні `https://tendly-booking.vercel.app` підтверджено відсутність console/hydration помилок після виправлення вкладення форми у `#roles`.
+- **Lighthouse 13.6 (PageSpeed Insights, живий `/`, 2026-11-16):** `mobile` Performance `99`, Accessibility `100`, Best Practices `100`, SEO `100`; `desktop` — `100` в усіх чотирьох категоріях. На живому продакшні `https://tendly-booking.vercel.app` підтверджено відсутність console/hydration помилок після виправлення вкладення форми у `#roles`.
 
 ## Чесно про демо
 

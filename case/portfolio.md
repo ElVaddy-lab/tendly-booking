@@ -1,7 +1,7 @@
 # Stage 16 — Portfolio & Marketplace Packaging (Tendly)
 
 Ready-to-publish copy and visual assets for **Upwork**, **Freelancehunt**, and **vadymdev**.
-Visual assets live locally in `case/media/` (gitignored):
+Visual assets live in `case/media/`; the marketplace banners below stay local (gitignored), only the case screenshots are committed:
 - Upwork gallery (4:3, `2000×1500`): `upwork-01-cover.png`, `upwork-02-booking-and-dst.png`, `upwork-03-calendar-and-roles.png`, `upwork-04-billing-and-proof.png`
 - Freelancehunt single showcase image (`1600×1200`): `freelancehunt-cover.png`
 - `vadymdev` base screenshots: `home.png`, `home-mobile.png`, `booking.png`, `booking-mobile.png`, `dashboard-owner.png`
@@ -14,6 +14,7 @@ Visual assets live locally in `case/media/` (gitignored):
 - **Role:** `Full-Stack Next.js, Postgres & Stripe Developer`
 - **Live URL:** `https://tendly-booking.vercel.app`
 - **Demo Booking Page:** `https://tendly-booking.vercel.app/b/northside-barbers`
+- **Source Code:** `https://github.com/ElVaddy-lab/tendly-booking`
 - **Skills / Tags:** `Next.js`, `React`, `TypeScript`, `PostgreSQL`, `Supabase`, `Stripe`, `Playwright`, `Tailwind CSS`
 
 ### Portfolio Description (English)
@@ -28,7 +29,7 @@ It demonstrates production solutions to the hardest edge cases in online booking
 • Role-isolated admin workbench: one-click demo login for Owner, Manager, and Staff enforced by Postgres RLS helpers in a private schema, Day/Week staff calendar, walk-in manual booking, GDPR customer data erasure, Telegram /start webhook alerts drained by pg_cron, and revocable per-staff .ics feeds.
 • Stripe Sandbox & DB-enforced plans: Free (3 staff, 5 services, 100 bookings/mo) and Pro ($19/mo, 10 staff, unlimited services/bookings). Plan changes happen only via signature-verified Stripe webhooks with idempotent event logging and canonical subscription re-fetch — enforced inside Postgres triggers, not only React UI.
 
-Verification: 278 pgTAP database assertions (0 db lint errors), 105 Vitest unit tests, and 30 Playwright + axe-core WCAG 2.2 AA end-to-end checks (including live two-tab concurrency and Stripe webhook flows). Lighthouse 13.6 on `/` (Stage 12 build): Mobile 99 Performance / 100 A11y / 100 Best Practices / 100 SEO; Desktop 100 / 100 / 96 / 100.
+Verification: 278 pgTAP database assertions (0 db lint errors), 105 Vitest unit tests, and 30 Playwright + axe-core WCAG 2.2 AA end-to-end checks (including live two-tab concurrency and Stripe webhook flows). Lighthouse 13.6 via PageSpeed Insights on the live `/` (2026-11-16): Mobile 99 Performance / 100 Accessibility / 100 Best Practices / 100 SEO; Desktop 100 / 100 / 100 / 100.
 
 Honest demo disclosure: Northside Barbers, its staff, and starter bookings are fictional, payments run strictly in Stripe Test Mode (card 4242...), demo accounts reset nightly, and visitor workspaces created via open sign-up are removed after 24 hours.
 ```
@@ -101,6 +102,7 @@ Not included unless scoped separately: mobile native apps, custom email SMTP dom
 
 - **Назва роботи:** `Tendly — SaaS онлайн-бронювання (Next.js 16, Supabase RLS, Stripe)`
 - **Посилання на демо:** `https://tendly-booking.vercel.app`
+- **Код:** `https://github.com/ElVaddy-lab/tendly-booking`
 - **Теги:** `Next.js`, `React`, `TypeScript`, `PostgreSQL`, `Supabase`, `Stripe`, `Playwright`
 
 ### Опис для Freelancehunt (Українською)

@@ -50,8 +50,16 @@ next-env.d.ts
 /supabase/.temp/
 /supabase/.branches/
 
-# case screenshots and videos stay outside git
-/case/media/
+# case media stays outside git, except the screenshots case/case.md embeds
+/case/media/*
+!/case/media/home.png
+!/case/media/booking.png
+!/case/media/booking-mobile.png
+!/case/media/manage.png
+!/case/media/roles.png
+!/case/media/dashboard-owner.png
+!/case/media/dashboard-staff.png
+!/case/media/billing.png
 
 # impeccable: build artifacts and third-party reference screenshots stay local
 /.impeccable/build/

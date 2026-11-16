@@ -91,10 +91,6 @@ export interface DemoAuthAdminDeps {
         }>;
       };
     };
-    rpc: (fn: "reset_demo_and_expired_data") => PromiseLike<{
-      data: unknown;
-      error: { message?: string } | null;
-    }>;
   };
   ssrSupabase?: {
     auth: {
@@ -107,7 +103,14 @@ export interface DemoAuthAdminDeps {
       }>;
     };
   };
+  /** Pause between attempts; injectable so tests do not sleep. */
+  wait?: (ms: number) => Promise<void>;
 }
+
+const DEMO_SIGN_IN_ATTEMPTS = 3;
+const DEMO_SIGN_IN_ERROR = "Could not start demo session right now. Please try again.";
+
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 /**
  * Signs the caller into one of the three shared demo accounts via a server-generated
@@ -121,41 +124,40 @@ export async function signInAsDemoRole(
   const adminSupabase = deps?.adminSupabase ?? createAdminSupabaseClient();
   const ssrSupabase = deps?.ssrSupabase ?? (await createClient());
 
-  let linkResult = await adminSupabase.auth.admin.generateLink({
-    type: "magiclink",
-    email: account.email,
-  });
+  const wait = deps?.wait ?? sleep;
 
-  if (linkResult.error || !linkResult.data?.properties?.hashed_token) {
-    // Self-heal if called against a freshly provisioned DB prior to seed execution
-    await adminSupabase.rpc("reset_demo_and_expired_data");
-    linkResult = await adminSupabase.auth.admin.generateLink({
+  // Each demo role is one shared Auth user, and a new magic link replaces the
+  // previous one-time token. Two visitors entering as the same role at once
+  // therefore race: the slower verifyOtp sees "One-time token not found".
+  // A fresh link after a short, jittered pause wins that race.
+  for (let attempt = 1; attempt <= DEMO_SIGN_IN_ATTEMPTS; attempt += 1) {
+    // Fail closed: a public, unauthenticated action must never reset the shared demo.
+    // Missing demo accounts are restored only by the CRON_SECRET-protected nightly reset.
+    const linkResult = await adminSupabase.auth.admin.generateLink({
       type: "magiclink",
       email: account.email,
     });
+
+    const hashedToken = linkResult.data?.properties?.hashed_token;
+    if (linkResult.error || !hashedToken) {
+      return { ok: false, error: DEMO_SIGN_IN_ERROR };
+    }
+
+    const { data: verifyData, error: verifyError } = await ssrSupabase.auth.verifyOtp({
+      token_hash: hashedToken,
+      type: "magiclink",
+    });
+
+    if (!verifyError && verifyData?.user) {
+      return { ok: true, redirectTo: "/dashboard" };
+    }
+
+    if (attempt < DEMO_SIGN_IN_ATTEMPTS) {
+      await wait(100 + Math.floor(Math.random() * 200));
+    }
   }
 
-  const hashedToken = linkResult.data?.properties?.hashed_token;
-  if (linkResult.error || !hashedToken) {
-    return {
-      ok: false,
-      error: "Could not start demo session right now. Please try again.",
-    };
-  }
-
-  const { data: verifyData, error: verifyError } = await ssrSupabase.auth.verifyOtp({
-    token_hash: hashedToken,
-    type: "magiclink",
-  });
-
-  if (verifyError || !verifyData?.user) {
-    return {
-      ok: false,
-      error: "Could not start demo session right now. Please try again.",
-    };
-  }
-
-  return { ok: true, redirectTo: "/dashboard" };
+  return { ok: false, error: DEMO_SIGN_IN_ERROR };
 }
 
 export interface DemoResetDeps {

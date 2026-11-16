@@ -8,7 +8,7 @@
 
 ## Git
 
-Гілка `main`, remote **не налаштований**, нічого не запушено. Коміти:
+Гілка `main`, remote `origin` → https://github.com/ElVaddy-lab/tendly-booking (публічний, створено 2026-11-16). Коміти:
 
 | Коміт | Що |
 |---|---|
@@ -25,7 +25,7 @@
 | `0ab84e7` | Етап 15: англомовний `README.md`, 3 ADR у `docs/adr/`, кейс `case/case.md`, сценарій відео `case/video-script.md` та скріншоти в `case/media/` |
 | *Етап 16* | Упаковка для портфоліо: `case/portfolio.md` (Upwork + Project Catalog, Freelancehunt, `vadymdev`) та згенеровані банери в `case/media/` |
 
-Щоб перенести проєкт в інше середовище, потрібен або push у GitHub (лише за командою користувача), або копія папки.
+Нове середовище: `git clone https://github.com/ElVaddy-lab/tendly-booking.git`. Push — лише за командою користувача.
 
 ## Етапи PLAN.md
 

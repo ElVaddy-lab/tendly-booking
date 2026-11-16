@@ -4,6 +4,7 @@ A portfolio SaaS demo for appointment-based small businesses (barbershops, salon
 
 **Live demo:** https://tendly-booking.vercel.app  
 **Demo booking page:** https://tendly-booking.vercel.app/b/northside-barbers  
+**Source:** https://github.com/ElVaddy-lab/tendly-booking  
 **One-click role entry:** `/demo/owner` · `/demo/manager` · `/demo/staff`
 
 > **Honest demo notice:** *Northside Barbers*, its barbers, services, and starter appointments are fictional. Payments run strictly in **Stripe Test Mode (Sandbox)** using test cards (`4242 ...`). In the live demo, visitor sign-up works without email confirmation, demo data resets nightly (`02:55` / `03:00 UTC`), and visitor-created businesses and accounts older than 24 hours are automatically deleted.
@@ -83,7 +84,7 @@ Supabase Postgres + Auth (`xuzipblvmhjfvxlbxpfi` hosted / Docker local)
 | `tests/e2e/` | Playwright + `@axe-core/playwright` E2E specs (desktop & mobile viewports, two-tab race, Stripe webhooks, demo restrictions) |
 | `scripts/stripe-setup.mjs` | Idempotent script to create the Tendly Pro `$19/mo` product/price in Stripe Sandbox |
 | `docs/adr/` | Architecture Decision Records |
-| `case/` | Case study (`case/case.md`), video walkthrough script (`case/video-script.md`), and local captures in `case/media/` (gitignored) |
+| `case/` | Case study (`case/case.md`), video walkthrough script (`case/video-script.md`), and the screenshots it embeds in `case/media/` (marketplace banners stay local) |
 
 ---
 
@@ -162,7 +163,7 @@ Open http://localhost:3000 (or http://localhost:3000/b/northside-barbers).
 - **Database (pgTAP):** 13 test suites, **278 assertions passing** (`supabase db lint` reports 0 errors).
 - **Unit tests (Vitest):** 14 files, **105 tests passing** (including DST boundaries, slot math, `.ics` generation, webhook verification, demo helpers).
 - **End-to-end & Accessibility (Playwright + axe-core):** **30 passing tests** across Chromium desktop and mobile (`390×844`), including simultaneous two-tab race via `Promise.all`, `America/New_York` DST visitor conversions, Stripe webhook simulation, and **0 WCAG 2.2 AA violations** on audited pages.
-- **Lighthouse 13.6 (`/` landing, Stage 12 build):** Mobile Performance `99`, Accessibility `100`, Best Practices `100`, SEO `100`; Desktop Performance `100`, Accessibility `100`, SEO `100`.
+- **Lighthouse 13.6 via PageSpeed Insights (live `/`, 2026-11-16):** Mobile Performance `99`, Accessibility `100`, Best Practices `100`, SEO `100`; Desktop `100` across all four categories.
 
 ---
 

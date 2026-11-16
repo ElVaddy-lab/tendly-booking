@@ -37,7 +37,6 @@ describe("signInAsDemoRole", () => {
     const result = await signInAsDemoRole("manager", {
       adminSupabase: {
         auth: { admin: { generateLink } },
-        rpc: vi.fn(),
       },
       ssrSupabase: {
         auth: { verifyOtp },
@@ -68,8 +67,60 @@ describe("signInAsDemoRole", () => {
     const result = await signInAsDemoRole("owner", {
       adminSupabase: {
         auth: { admin: { generateLink } },
-        rpc: vi.fn(),
       },
+      ssrSupabase: {
+        auth: { verifyOtp },
+      },
+      wait: vi.fn().mockResolvedValue(undefined),
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      error: "Could not start demo session right now. Please try again.",
+    });
+    expect(verifyOtp).toHaveBeenCalledTimes(3);
+  });
+
+  it("retries when a parallel visitor's magic link overwrote the one-time token", async () => {
+    // Two visitors entering as the same role at once: the second generateLink
+    // replaces the first user's token, so the first verifyOtp sees otp_expired.
+    const generateLink = vi
+      .fn()
+      .mockResolvedValueOnce({ data: { properties: { hashed_token: "hash_stale" } }, error: null })
+      .mockResolvedValueOnce({ data: { properties: { hashed_token: "hash_fresh" } }, error: null });
+    const verifyOtp = vi
+      .fn()
+      .mockResolvedValueOnce({ data: { user: null }, error: { message: "One-time token not found" } })
+      .mockResolvedValueOnce({
+        data: { user: { id: "d0000000-0000-4000-8000-000000000011" } },
+        error: null,
+      });
+    const wait = vi.fn().mockResolvedValue(undefined);
+
+    const result = await signInAsDemoRole("owner", {
+      adminSupabase: { auth: { admin: { generateLink } } },
+      ssrSupabase: { auth: { verifyOtp } },
+      wait,
+    });
+
+    expect(result).toEqual({ ok: true, redirectTo: "/dashboard" });
+    expect(generateLink).toHaveBeenCalledTimes(2);
+    expect(verifyOtp).toHaveBeenLastCalledWith({ token_hash: "hash_fresh", type: "magiclink" });
+    expect(wait).toHaveBeenCalledTimes(1);
+  });
+
+  it("fails closed when the magic link cannot be generated and never resets the shared demo", async () => {
+    const generateLink = vi.fn().mockResolvedValue({
+      data: null,
+      error: { message: "User not found" },
+    });
+    const rpc = vi.fn();
+    const verifyOtp = vi.fn();
+    // rpc is deliberately outside the deps type: nothing in sign-in may reach for it.
+    const adminSupabase = { auth: { admin: { generateLink } }, rpc };
+
+    const result = await signInAsDemoRole("staff", {
+      adminSupabase,
       ssrSupabase: {
         auth: { verifyOtp },
       },
@@ -79,6 +130,9 @@ describe("signInAsDemoRole", () => {
       ok: false,
       error: "Could not start demo session right now. Please try again.",
     });
+    expect(generateLink).toHaveBeenCalledTimes(1);
+    expect(rpc).not.toHaveBeenCalled();
+    expect(verifyOtp).not.toHaveBeenCalled();
   });
 });
 
