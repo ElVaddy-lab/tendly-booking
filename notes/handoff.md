@@ -22,7 +22,8 @@
 | `e6901a8` | Етапи 10–11: сповіщення (`notification_outbox` + Telegram + `pg_cron` + `.ics`-підписка) і Stripe-білінг (`stripe:setup`, Checkout/Portal, вебхук, ліміти Free/Pro), міграції `…100900`–`…101000` |
 | `e1872b5` | Етапи 12–13: якість (гонка 2 вкладок, `America/New_York` DST, axe, Lighthouse, `notes/stage12-checklist.md`) + демо-бізнес `Northside Barbers`, `/demo/[role]`, `/api/cron/demo-reset`, `seed.sql` і E2E демо-обмежень (`…101100`) |
 | `9e145b7` | Етап 14: Vercel (`https://tendly-booking.vercel.app`), hosted Supabase `xuzipblvmhjfvxlbxpfi`, Vault + 4 `pg_cron`/`pg_net`, Stripe Sandbox webhook + Portal, Telegram webhook, фікс `#418` у `role-switcher.tsx`, `notes/stage14-deploy.md` |
-| *Етап 15* | Документація й кейс: `README.md` (EN), `docs/adr/001..003-*.md`, `case/case.md`, `case/video-script.md`, скріншоти в `case/media/` поза git |
+| `0ab84e7` | Етап 15: англомовний `README.md`, 3 ADR у `docs/adr/`, кейс `case/case.md`, сценарій відео `case/video-script.md` та скріншоти в `case/media/` |
+| *Етап 16* | Упаковка для портфоліо: `case/portfolio.md` (Upwork + Project Catalog, Freelancehunt, `vadymdev`) та згенеровані банери в `case/media/` |
 
 Щоб перенести проєкт в інше середовище, потрібен або push у GitHub (лише за командою користувача), або копія папки.
 
@@ -44,7 +45,7 @@
 - ✅ 13. Демо-бізнес і нічне скидання: міграція `20261115101100_demo_and_reset.sql` + `supabase/seed.sql` для вигаданого `Northside Barbers` (`Europe/Kyiv`, Free 3/5), 3 демо-акаунти (`owner`/`manager`/`staff`), DB-тригери захисту демо-бізнесу/учасників/`auth.users` і блокування Telegram, `pg_cron` `reset_demo_and_expired_data()` + `/api/cron/demo-reset` (скасовує тестові Stripe-підписки й видаляє бізнеси/користувачів >24 год), `/demo/[role]`, 1-click вхід із `#roles`, перехід Hero-картки на `/b/northside-barbers` та E2E (`demo-mode.spec.ts`).
 - ✅ 14. Деплой: Vercel `https://tendly-booking.vercel.app`, hosted Supabase `tendly-demo` (`xuzipblvmhjfvxlbxpfi`, `eu-central-1`, 12 міграцій + `seed.sql`, Vault + `pg_cron`/`pg_net`), Stripe Sandbox webhook (`we_1UcRSRACAxpxeFMcdGKVYVre`) + Customer Portal, Telegram `setWebhook`; інструкція — `notes/stage14-deploy.md`. У Supabase Dashboard Auth треба вручну вимкнути «Confirm email» і прописати `Site URL` / `Redirect URLs`.
 - ✅ 15. Документація й кейс: англомовний `README.md` (архітектура, модель безпеки, локальний запуск зі Stripe CLI), 3 ADR (`docs/adr/001..003-*.md` про TZ/DST, конфлікти слотів і Stripe-ліміти), `case/case.md`, 5-хв сценарій `case/video-script.md` та 9 скріншотів у `case/media/` (поза git).
-- ⏭️ **Наступний — 16. Портфоліо**: тексти й упаковка для Upwork (+ профіль React / Next.js), Freelancehunt (одне зображення), vadymdev.
+- ✅ 16. Портфоліо: готові тексти для Upwork (спецпрофіль React / Next.js), Project Catalog «Booking MVP on Next.js + Supabase», Freelancehunt і `vadymdev` у `case/portfolio.md` + відрендерені банери у `case/media/`. Усі 16 етапів плану завершено.
 
 ## База даних (`supabase/`)
 
