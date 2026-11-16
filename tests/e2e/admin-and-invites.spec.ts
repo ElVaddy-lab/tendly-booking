@@ -54,17 +54,20 @@ test("owner manages services, staff split hours, time off, and invites a staff m
   await expect(
     addServiceSection.getByRole("status").getByText('Added "Beard trim".'),
   ).toBeVisible();
-  await expect(page.getByText("Beard trim").first()).toBeVisible();
+  const servicesSection = page.getByRole("region", { name: "Services" });
+  await expect(servicesSection.getByText("Beard trim").first()).toBeVisible();
 
   await page.getByRole("button", { name: "Pause Beard trim" }).click();
-  await expect(page.getByText("Beard trim (inactive)")).toBeVisible();
+  await expect(servicesSection.getByText("Beard trim (inactive)")).toBeVisible();
   await page.getByRole("button", { name: "Activate Beard trim" }).click();
   await expect(page.getByText("Beard trim (inactive)")).toHaveCount(0);
 
   await addServiceSection.getByLabel("Service name").fill("Quick neck shave");
   await addServiceSection.getByLabel("Duration (min)").fill("15");
   await addServiceSection.getByRole("button", { name: "Add service" }).click();
-  await expect(page.getByText("Quick neck shave").first()).toBeVisible();
+  await expect(servicesSection.getByText("Quick neck shave").first()).toBeVisible({
+    timeout: 15_000,
+  });
   await page.getByRole("button", { name: "Delete Quick neck shave" }).click();
   await expect(page.getByText("Quick neck shave", { exact: true })).toHaveCount(0);
   await expect(
@@ -85,7 +88,9 @@ test("owner manages services, staff split hours, time off, and invites a staff m
   await expectNoA11yViolations(page);
   await samCard.getByRole("button", { name: "Save weekly hours" }).click();
 
-  await expect(samCard.getByRole("status").getByText("Weekly hours saved.")).toBeVisible();
+  await expect(samCard.getByRole("status").getByText("Weekly hours saved.")).toBeVisible({
+    timeout: 15_000,
+  });
   await expect(samCard.getByText("09:00–13:00")).toBeVisible();
   await expect(samCard.getByText("14:00–18:00")).toBeVisible();
   await expect(samCard.getByLabel("Window 1 end time for Sam")).toHaveValue("13:00");

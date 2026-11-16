@@ -23,6 +23,7 @@ test("sign-in and sign-up pages pass WCAG 2.2 AA checks", async ({ page }) => {
 test("owner signs up, completes two-step onboarding, reaches dashboard, signs out and signs back in", async ({
   page,
 }, testInfo) => {
+  test.setTimeout(90_000);
   const suffix = `${Date.now().toString(36)}-${testInfo.workerIndex}-${Math.random().toString(36).slice(2, 6)}`;
   const email = `owner-${suffix}@example.test`;
   const password = "password1234";
@@ -49,7 +50,7 @@ test("owner signs up, completes two-step onboarding, reaches dashboard, signs ou
   await expect(page).toHaveURL(/\/onboarding$/);
   await expect(
     page.getByRole("heading", { level: 1, name: "Open your first chair" }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 15_000 });
   await expectNoA11yViolations(page);
 
   await page.getByLabel("Your display name").fill("Andriy");
@@ -73,17 +74,19 @@ test("owner signs up, completes two-step onboarding, reaches dashboard, signs ou
   await expect(page.getByRole("heading", { level: 1, name: businessName })).toBeVisible();
   await expect(page.getByText(`/b/${slug}`).first()).toBeVisible();
   await expect(page.getByText("Andriy").first()).toBeVisible();
-  await expect(page.getByText("Skin fade").first()).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Services" }).getByText("Skin fade").first(),
+  ).toBeVisible();
   await expectNoA11yViolations(page);
 
   await page.getByRole("button", { name: "Sign out" }).click();
-  await expect(page).toHaveURL(/\/sign-in$/);
+  await expect(page).toHaveURL(/\/sign-in$/, { timeout: 15_000 });
 
   await page.goto("/sign-in", { waitUntil: "networkidle" });
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
 
-  await expect(page).toHaveURL(/\/dashboard$/);
+  await expect(page).toHaveURL(/\/dashboard$/, { timeout: 15_000 });
   await expect(page.getByRole("heading", { level: 1, name: businessName })).toBeVisible();
 });

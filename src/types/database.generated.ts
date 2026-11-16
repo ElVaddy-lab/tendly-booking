@@ -7,14 +7,14 @@ export type Database = {
           Tables: {
             "bookings": {
                   Row: {
-                    "blocked_until": string,"business_id": string,"cancelled_at": string | null,"created_at": string,"customer_email": string,"customer_name": string,"customer_phone": string | null,"customer_timezone": string | null,"ends_at": string,"id": string,"manage_token_hash": string | null,"notes": string | null,"service_id": string,"staff_id": string,"starts_at": string,"status": Database["public"]['Enums']["booking_status"]
+                    "blocked_until": string,"business_id": string,"cancelled_at": string | null,"created_at": string,"customer_email": string,"customer_name": string,"customer_phone": string | null,"customer_timezone": string | null,"ends_at": string,"erased_at": string | null,"id": string,"manage_token_hash": string | null,"notes": string | null,"service_id": string,"staff_id": string,"starts_at": string,"status": Database["public"]['Enums']["booking_status"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "blocked_until": string,"business_id": string,"cancelled_at"?: string | null,"created_at"?: string,"customer_email": string,"customer_name": string,"customer_phone"?: string | null,"customer_timezone"?: string | null,"ends_at": string,"id"?: string,"manage_token_hash"?: string | null,"notes"?: string | null,"service_id": string,"staff_id": string,"starts_at": string,"status"?: Database["public"]['Enums']["booking_status"]
+                    "blocked_until": string,"business_id": string,"cancelled_at"?: string | null,"created_at"?: string,"customer_email": string,"customer_name": string,"customer_phone"?: string | null,"customer_timezone"?: string | null,"ends_at": string,"erased_at"?: string | null,"id"?: string,"manage_token_hash"?: string | null,"notes"?: string | null,"service_id": string,"staff_id": string,"starts_at": string,"status"?: Database["public"]['Enums']["booking_status"]
                   }
                   Update: {
-                    "blocked_until"?: string,"business_id"?: string,"cancelled_at"?: string | null,"created_at"?: string,"customer_email"?: string,"customer_name"?: string,"customer_phone"?: string | null,"customer_timezone"?: string | null,"ends_at"?: string,"id"?: string,"manage_token_hash"?: string | null,"notes"?: string | null,"service_id"?: string,"staff_id"?: string,"starts_at"?: string,"status"?: Database["public"]['Enums']["booking_status"]
+                    "blocked_until"?: string,"business_id"?: string,"cancelled_at"?: string | null,"created_at"?: string,"customer_email"?: string,"customer_name"?: string,"customer_phone"?: string | null,"customer_timezone"?: string | null,"ends_at"?: string,"erased_at"?: string | null,"id"?: string,"manage_token_hash"?: string | null,"notes"?: string | null,"service_id"?: string,"staff_id"?: string,"starts_at"?: string,"status"?: Database["public"]['Enums']["booking_status"]
                   }
                   Relationships: [
                     {
@@ -213,6 +213,16 @@ isOneToOne: false
               "staff_id": string,"starts_at": string
             }[]
                            },
+"available_slots_for_reschedule":
+{ Args: { "p_from"?: string,"p_staff_id"?: string,"p_to"?: string,"p_token": string }; Returns: {
+              "staff_id": string,"starts_at": string
+            }[]
+                           },
+"cancel_booking":
+{ Args: { "p_token": string }; Returns: {
+              "booking_id": string,"cancelled_at": string,"status": Database["public"]['Enums']["booking_status"]
+            }[]
+                           },
 "complete_onboarding":
 { Args: { "p_buffer_min"?: number,"p_business_id": string,"p_duration_min": number,"p_end_time"?: string,"p_price_cents"?: number,"p_service_name": string,"p_staff_name": string,"p_start_time"?: string,"p_weekdays"?: (number)[] }; Returns: {
               "service_id": string,"staff_id": string
@@ -231,13 +241,38 @@ isOneToOne: false
               "expires_at": string,"invitation_id": string,"token": string
             }[]
                            },
+"create_manual_booking":
+{ Args: { "p_business_id": string,"p_customer_email"?: string,"p_customer_name": string,"p_customer_phone"?: string,"p_notes"?: string,"p_service_id": string,"p_staff_id": string,"p_starts_at": string }; Returns: {
+              "booking_id": string,"ends_at": string,"manage_token": string,"staff_id": string,"starts_at": string
+            }[]
+                           },
+"erase_booking_customer_data":
+{ Args: { "p_booking_id": string,"p_business_id": string }; Returns: {
+              "booking_id": string,"erased_at": string,"status": Database["public"]['Enums']["booking_status"]
+            }[]
+                           },
+"get_booking_by_token":
+{ Args: { "p_token": string }; Returns: {
+              "booking_horizon_days": number,"booking_id": string,"business_id": string,"business_is_demo": boolean,"business_name": string,"business_slug": string,"business_timezone": string,"can_cancel": boolean,"can_reschedule": boolean,"cancellation_deadline_hours": number,"cancelled_at": string,"created_at": string,"customer_name": string,"customer_timezone": string,"deadline_at": string,"ends_at": string,"min_notice_minutes": number,"notes": string,"service_buffer_min": number,"service_currency": string,"service_duration_min": number,"service_id": string,"service_is_active": boolean,"service_name": string,"service_price_cents": number,"slot_step_minutes": number,"staff_id": string,"staff_name": string,"starts_at": string,"status": Database["public"]['Enums']["booking_status"],"token_expires_at": string
+            }[]
+                           },
 "get_business_invitation":
 { Args: { "p_token": string }; Returns: {
               "business_id": string,"business_name": string,"business_slug": string,"expires_at": string,"invitation_id": string,"is_valid": boolean,"role": Database["public"]['Enums']["member_role"],"staff_id": string,"staff_name": string
             }[]
                            },
+"reschedule_booking":
+{ Args: { "p_staff_id": string,"p_starts_at": string,"p_token": string }; Returns: {
+              "booking_id": string,"ends_at": string,"staff_id": string,"starts_at": string
+            }[]
+                           },
 "set_staff_weekly_hours":
 { Args: { "p_business_id": string,"p_hours": Json,"p_staff_id": string }; Returns: undefined
+                           },
+"update_booking_status":
+{ Args: { "p_booking_id": string,"p_business_id": string,"p_status": Database["public"]['Enums']["booking_status"] }; Returns: {
+              "booking_id": string,"cancelled_at": string,"status": Database["public"]['Enums']["booking_status"]
+            }[]
                            }
           }
           Enums: {

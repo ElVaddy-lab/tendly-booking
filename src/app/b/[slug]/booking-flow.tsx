@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useSyncExternalStore, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 
 import { TurnstileField } from "@/components/turnstile-field";
+import { downloadIcsFile, useCustomerTimeZone } from "@/lib/booking-client";
 import {
   buildBookingDateDays,
   formatPriceCents,
@@ -11,7 +12,10 @@ import {
   type GroupedBookingSlot,
   type RawAvailableSlot,
 } from "@/lib/booking-slots";
-import { isValidIanaTimeZone } from "@/lib/slug";
+import {
+  formatBookingDateTime,
+  getDisplayInitials,
+} from "@/lib/manage-booking";
 import {
   createPublicBookingAction,
   listPublicSlotsAction,
@@ -30,70 +34,6 @@ type BookingFlowProps = {
 
 const DAYS_PER_PAGE = 7;
 const FETCH_WINDOW_DAYS = 14;
-const subscribeNoop = () => () => {};
-
-function useCustomerTimeZone(fallbackTimeZone: string): string {
-  return useSyncExternalStore(
-    subscribeNoop,
-    () => {
-      try {
-        const resolved = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const normalized = resolved === "Europe/Kiev" ? "Europe/Kyiv" : resolved;
-        return normalized && isValidIanaTimeZone(normalized)
-          ? normalized
-          : fallbackTimeZone;
-      } catch {
-        return fallbackTimeZone;
-      }
-    },
-    () => fallbackTimeZone,
-  );
-}
-
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length >= 2) {
-    return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
-  }
-  return name.trim().slice(0, 2).toUpperCase() || "?";
-}
-
-function downloadIcsFile(content: string, filename: string): void {
-  const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  link.style.display = "none";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function formatDateTimeForDisplay(
-  iso: string,
-  timeZone: string,
-): { dateLabel: string; timeLabel: string } {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) {
-    return { dateLabel: "Scheduled date", timeLabel: "" };
-  }
-  const dateLabel = new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  }).format(date);
-  const timeLabel = new Intl.DateTimeFormat("en-GB", {
-    timeZone,
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).format(date);
-
-  return { dateLabel, timeLabel };
-}
 
 export function BookingFlow({
   catalog,
@@ -390,7 +330,7 @@ export function BookingFlow({
     : "Select a time slot";
 
   const confirmedClock = confirmed
-    ? formatDateTimeForDisplay(confirmed.startsAt, customerTimeZone)
+    ? formatBookingDateTime(confirmed.startsAt, customerTimeZone)
     : null;
 
   return (
@@ -492,7 +432,7 @@ export function BookingFlow({
                         className={styles.srRadio}
                       />
                       <span className={styles.avatar} aria-hidden="true">
-                        {getInitials(member.display_name)}
+                        {getDisplayInitials(member.display_name)}
                       </span>
                       <span className={styles.barberCopy}>
                         <span className={styles.barberName}>{member.display_name}</span>

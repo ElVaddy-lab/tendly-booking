@@ -1,6 +1,9 @@
 import { cacheLife, cacheTag, io } from "next/cache";
 
-import type { RawAvailableSlot } from "@/lib/booking-slots";
+import {
+  computeSlotsFetchRange,
+  type RawAvailableSlot,
+} from "@/lib/booking-slots";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 
 export type PublicBusiness = {
@@ -41,8 +44,6 @@ export type PublicCatalog = {
   staff: PublicStaff[];
   staffServices: PublicStaffService[];
 };
-
-const MAX_RPC_WINDOW_MS = 14 * 24 * 60 * 60 * 1000 - 60_000;
 
 /**
  * Fetches the public business profile and active booking catalog using Next.js 16
@@ -107,20 +108,14 @@ export async function fetchAvailableSlotsWindow(input: {
   fromIso?: string;
 }): Promise<{ slots: RawAvailableSlot[]; error: string | null }> {
   const supabase = createPublicSupabaseClient();
-  const now = new Date();
-  const parsedFrom = input.fromIso ? new Date(input.fromIso) : null;
-  const start =
-    parsedFrom && !Number.isNaN(parsedFrom.getTime()) && parsedFrom > now
-      ? parsedFrom
-      : now;
-  const end = new Date(start.getTime() + MAX_RPC_WINDOW_MS);
+  const { startIso, endIso } = computeSlotsFetchRange(input.fromIso);
 
   const { data, error } = await supabase.rpc("available_slots", {
     p_business_id: input.businessId,
     p_service_id: input.serviceId,
     p_staff_id: input.staffId ?? undefined,
-    p_from: start.toISOString(),
-    p_to: end.toISOString(),
+    p_from: startIso,
+    p_to: endIso,
   });
 
   if (error) {

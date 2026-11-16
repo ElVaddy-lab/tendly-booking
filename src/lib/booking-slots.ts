@@ -161,6 +161,22 @@ export function groupAvailableSlotsByDate(
   return grouped;
 }
 
+export const MAX_SLOTS_RPC_WINDOW_MS = 14 * 24 * 60 * 60 * 1000 - 60_000;
+
+export function computeSlotsFetchRange(
+  fromIso?: string,
+  nowMs: number = Date.now(),
+): { startIso: string; endIso: string } {
+  const parsedFrom = fromIso ? Date.parse(fromIso) : Number.NaN;
+  const startMs =
+    !Number.isNaN(parsedFrom) && parsedFrom > nowMs ? parsedFrom : nowMs;
+  const endMs = startMs + MAX_SLOTS_RPC_WINDOW_MS;
+  return {
+    startIso: new Date(startMs).toISOString(),
+    endIso: new Date(endMs).toISOString(),
+  };
+}
+
 export function formatPriceCents(
   priceCents: number | null,
   currency = "USD",

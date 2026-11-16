@@ -18,6 +18,7 @@ import {
   ServiceStaffEditor,
   StaffScheduleEditor,
 } from "./dashboard-forms";
+import { BookingsWorkbench } from "./bookings-workbench";
 import styles from "./dashboard.module.css";
 
 export const metadata: Metadata = {
@@ -85,6 +86,8 @@ async function DashboardContent() {
     timeOff,
     members,
     invitations,
+    bookings,
+    nowIso,
   } = ctx;
 
   const isOwner = membership.role === "owner";
@@ -134,12 +137,16 @@ async function DashboardContent() {
           </div>
 
           <nav className={styles.sideNav} aria-label="Workspace sections">
-            <a href="#services" className={`${styles.sideNavLink} ${styles.sideNavLinkActive}`}>
+            <a href="#bookings" className={`${styles.sideNavLink} ${styles.sideNavLinkActive}`}>
+              <Calendar className={styles.sideNavIcon} aria-hidden="true" strokeWidth={1.75} />
+              Bookings
+            </a>
+            <a href="#services" className={styles.sideNavLink}>
               <ClipboardList className={styles.sideNavIcon} aria-hidden="true" strokeWidth={1.75} />
               Services
             </a>
             <a href="#schedule" className={styles.sideNavLink}>
-              <Calendar className={styles.sideNavIcon} aria-hidden="true" strokeWidth={1.75} />
+              <Clock className={styles.sideNavIcon} aria-hidden="true" strokeWidth={1.75} />
               Schedule
             </a>
             {isOwner ? (
@@ -183,6 +190,20 @@ async function DashboardContent() {
             </span>
           </div>
         </header>
+
+        <BookingsWorkbench
+          businessId={business.id}
+          timezone={business.timezone}
+          canManage={canManage}
+          userStaffId={ownStaff?.id ?? null}
+          userStaffName={ownStaff?.display_name ?? null}
+          nowIso={nowIso}
+          staff={staff}
+          services={services}
+          weeklyHours={weeklyHours}
+          timeOff={timeOff}
+          bookings={bookings}
+        />
 
         <div className={styles.workbenchColumns}>
           <div className={styles.primaryColumn}>

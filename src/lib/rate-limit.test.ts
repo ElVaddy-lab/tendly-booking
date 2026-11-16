@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { checkBookingRateLimit, resetBookingRateLimitStore } from "./rate-limit";
+import {
+  checkBookingRateLimit,
+  checkManageRateLimit,
+  resetBookingRateLimitStore,
+} from "./rate-limit";
 
 describe("booking rate limiter", () => {
   beforeEach(() => {
@@ -71,5 +75,47 @@ describe("booking rate limiter", () => {
       nowMs: baseMs + 10 * 60 * 1000 + 1,
     });
     expect(afterWindow.allowed).toBe(true);
+  });
+
+  it("enforces manage rate limit per token and per IP", () => {
+    const baseMs = 1_700_000_000_000;
+
+    for (let i = 0; i < 15; i += 1) {
+      const result = checkManageRateLimit({
+        ip: "203.0.113.55",
+        token: "abcdef0123456789".repeat(4),
+        nowMs: baseMs + i * 1000,
+      });
+      expect(result.allowed).toBe(true);
+    }
+
+    const tokenBlocked = checkManageRateLimit({
+      ip: "203.0.113.55",
+      token: "abcdef0123456789".repeat(4),
+      nowMs: baseMs + 20_000,
+    });
+    expect(tokenBlocked.allowed).toBe(false);
+    if (!tokenBlocked.allowed) {
+      expect(tokenBlocked.reason).toBe("token");
+    }
+
+    for (let i = 0; i < 15; i += 1) {
+      const ok = checkManageRateLimit({
+        ip: "203.0.113.55",
+        token: `${String(i).padStart(2, "0")}bcdef0123456789`.repeat(4),
+        nowMs: baseMs + 30_000 + i * 1000,
+      });
+      expect(ok.allowed).toBe(true);
+    }
+
+    const ipBlocked = checkManageRateLimit({
+      ip: "203.0.113.55",
+      token: "99bcdef0123456789".repeat(4),
+      nowMs: baseMs + 60_000,
+    });
+    expect(ipBlocked.allowed).toBe(false);
+    if (!ipBlocked.allowed) {
+      expect(ipBlocked.reason).toBe("ip");
+    }
   });
 });

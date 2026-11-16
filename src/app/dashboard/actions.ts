@@ -14,6 +14,8 @@ export type DashboardActionState = {
   success?: string | null;
   fieldErrors?: Record<string, string>;
   invitePath?: string | null;
+  managePath?: string | null;
+  createdDateKey?: string | null;
 };
 
 const ROLE_RANK: Record<Enums<"member_role">, number> = {
@@ -123,6 +125,50 @@ const createInviteSchema = z.object({
 const revokeInviteSchema = z.object({
   businessId: uuidField,
   invitationId: uuidField,
+});
+
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+const createManualBookingSchema = z.object({
+  businessId: uuidField,
+  serviceId: uuidField,
+  staffId: uuidField,
+  dateLocal: z.string().trim().regex(DATE_PATTERN, "Choose a booking date."),
+  timeLocal: z.string().trim().regex(TIME_PATTERN, "Choose a start time."),
+  customerName: z
+    .string()
+    .trim()
+    .min(1, "Enter the client's name.")
+    .max(80, "Client name must be 80 characters or fewer."),
+  customerEmail: z
+    .string()
+    .trim()
+    .max(254, "Email must be 254 characters or fewer.")
+    .refine(
+      (value) => value === "" || z.string().email().safeParse(value).success,
+      "Enter a valid email address or leave it blank.",
+    ),
+  customerPhone: z
+    .string()
+    .trim()
+    .max(32, "Phone number must be 32 characters or fewer.")
+    .optional(),
+  notes: z
+    .string()
+    .trim()
+    .max(1000, "Notes must be 1000 characters or fewer.")
+    .optional(),
+});
+
+const updateBookingStatusSchema = z.object({
+  businessId: uuidField,
+  bookingId: uuidField,
+  status: z.enum(["confirmed", "completed", "no_show", "cancelled"]),
+});
+
+const eraseBookingCustomerSchema = z.object({
+  businessId: uuidField,
+  bookingId: uuidField,
 });
 
 function toMinutes(hhmm: string): number {
@@ -702,4 +748,153 @@ export async function revokeInvitationAction(
 
   revalidatePath("/dashboard");
   return { error: null, success: "Invite link revoked." };
+}
+
+export async function createManualBookingAction(
+  _prevState: DashboardActionState,
+  formData: FormData,
+): Promise<DashboardActionState> {
+  const parsed = createManualBookingSchema.safeParse({
+    businessId: formData.get("businessId"),
+    serviceId: formData.get("serviceId"),
+    staffId: formData.get("staffId"),
+    dateLocal: formData.get("dateLocal"),
+    timeLocal: formData.get("timeLocal"),
+    customerName: formData.get("customerName"),
+    customerEmail: String(formData.get("customerEmail") ?? ""),
+    customerPhone: String(formData.get("customerPhone") ?? "") || undefined,
+    notes: String(formData.get("notes") ?? "") || undefined,
+  });
+
+  if (!parsed.success) {
+    return firstValidationError(parsed.error);
+  }
+
+  const actor = await requireActor(parsed.data.businessId, "staff");
+  if (!actor.ok) {
+    return { error: actor.error };
+  }
+
+  const startsAtIso = localDateTimeToUtcIso(
+    `${parsed.data.dateLocal}T${parsed.data.timeLocal}`,
+    actor.timezone,
+  );
+  if (!startsAtIso) {
+    return {
+      error: `That local time is invalid in ${actor.timezone} (check DST changeovers).`,
+    };
+  }
+
+  const { data, error } = await actor.supabase.rpc("create_manual_booking", {
+    p_business_id: parsed.data.businessId,
+    p_service_id: parsed.data.serviceId,
+    p_staff_id: parsed.data.staffId,
+    p_starts_at: startsAtIso,
+    p_customer_name: parsed.data.customerName,
+    p_customer_email: parsed.data.customerEmail || undefined,
+    p_customer_phone: parsed.data.customerPhone,
+    p_notes: parsed.data.notes,
+  });
+
+  if (error) {
+    if (error.message.includes("slot_unavailable") || error.code === "23P01") {
+      return {
+        error: "That specialist already has an overlapping booking at that time.",
+      };
+    }
+    if (error.code === "42501") {
+      return {
+        error: "You can only create manual bookings for your own staff schedule.",
+      };
+    }
+    if (error.message.includes("invalid_target")) {
+      return {
+        error: "Choose an active specialist and active service.",
+      };
+    }
+    return { error: "Could not create manual booking. Please try again." };
+  }
+
+  const row = Array.isArray(data) ? data[0] : data;
+  revalidatePath("/dashboard");
+
+  return {
+    error: null,
+    success: "Manual booking added.",
+    managePath: row?.manage_token ? `/manage/${row.manage_token}` : null,
+    createdDateKey: parsed.data.dateLocal,
+  };
+}
+
+export async function updateBookingStatusAction(input: {
+  businessId: string;
+  bookingId: string;
+  status: Enums<"booking_status">;
+}): Promise<{ error: string | null; success?: string | null }> {
+  const parsed = updateBookingStatusSchema.safeParse(input);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid booking update." };
+  }
+
+  const actor = await requireActor(parsed.data.businessId, "staff");
+  if (!actor.ok) {
+    return { error: actor.error };
+  }
+
+  const { error } = await actor.supabase.rpc("update_booking_status", {
+    p_business_id: parsed.data.businessId,
+    p_booking_id: parsed.data.bookingId,
+    p_status: parsed.data.status,
+  });
+
+  if (error) {
+    if (error.code === "42501") {
+      return { error: "You can only update your own bookings." };
+    }
+    if (error.message.includes("booking_already_cancelled")) {
+      return {
+        error: "Cancelled bookings cannot be reopened. Create a new booking instead.",
+      };
+    }
+    if (error.message.includes("booking_not_found")) {
+      return { error: "Booking could not be found." };
+    }
+    return { error: "Could not update booking status." };
+  }
+
+  revalidatePath("/dashboard");
+  return { error: null, success: "Booking status updated." };
+}
+
+export async function eraseBookingCustomerDataAction(input: {
+  businessId: string;
+  bookingId: string;
+}): Promise<{ error: string | null; success?: string | null }> {
+  const parsed = eraseBookingCustomerSchema.safeParse(input);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid request." };
+  }
+
+  const actor = await requireActor(parsed.data.businessId, "manager");
+  if (!actor.ok) {
+    return { error: actor.error };
+  }
+
+  const { error } = await actor.supabase.rpc("erase_booking_customer_data", {
+    p_business_id: parsed.data.businessId,
+    p_booking_id: parsed.data.bookingId,
+  });
+
+  if (error) {
+    if (error.code === "42501") {
+      return { error: "Only owners and managers can erase client records." };
+    }
+    if (error.message.includes("booking_not_found")) {
+      return { error: "Booking could not be found." };
+    }
+    return { error: "Could not erase customer data." };
+  }
+
+  revalidatePath("/dashboard");
+  return { error: null, success: "Client details erased." };
 }

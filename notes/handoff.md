@@ -1,4 +1,4 @@
-# Передача роботи — Tendly (стан на 2026-11-15)
+# Передача роботи — Tendly (стан на 2026-11-16)
 
 Короткий конспект для продовження в іншому середовищі. Повні рішення — у `PLAN.md`, правила сесії — у `CLAUDE.md`, звірка з документацією — у `notes/stage2-docs.md`, доменна мова — у `CONTEXT.md`, факти про продукт — у `PRODUCT.md`, дизайн-система — у `DESIGN.md`.
 
@@ -17,7 +17,9 @@
 | `54dcb88` | Лендинг `/` і дизайн-система (`PRODUCT.md`, `DESIGN.md`, `.impeccable/design.json`) |
 | `f9a7d60` | Етап 5: `/sign-in`, `/sign-up`, двокроковий `/onboarding`, `create_business` і `complete_onboarding` RPC |
 | `c46277f` | Етап 6: адмінка `/dashboard`, інвайти `/invite/[token]`, візуальне узгодження всіх 7 не-Hero блоків із референсами `1.C` |
-| *Етап 7* | Публічна сторінка `/b/[slug]`: 4-колонкова дошка + перфорований квиток + `.ics`, міграція `20261115100600_public_booking.sql`, Turnstile, rate limit |
+| `f0671db` | Етап 7: публічна сторінка `/b/[slug]`: 4-колонкова дошка + перфорований квиток + `.ics`, міграція `20261115100600_public_booking.sql`, Turnstile, rate limit |
+| *Етап 8* | Керування записом `/manage/[token]`: скасування, перенесення (`available_slots_excluding`), міграція `20261115100700_manage_booking.sql`, Turnstile, rate limit |
+| *Етап 9* | Календар `/dashboard` (день / тиждень по працівниках), список і статуси записів, ручний запис, видалення ПД клієнта (`erase_booking_customer_data`), міграція `20261115100800_dashboard_bookings.sql` |
 
 Щоб перенести проєкт в інше середовище, потрібен або push у GitHub (лише за командою користувача), або копія папки.
 
@@ -31,13 +33,15 @@
 - ✅ 5. Онбординг: `/sign-in`, `/sign-up` (Supabase Auth + Turnstile), `create_business` і `complete_onboarding` RPC, перша послуга й розклад.
 - ✅ 6. Адмінка `/dashboard` (послуги, персонал, розклад, time off), інвайти `/invite/[token]` і редизайн не-Hero блоків під палітру `1.C`.
 - ✅ 7. Публічна сторінка бронювання (`/b/[slug]`): 4-колонкова дошка вибору послуги, майстра («Anyone available» або конкретний), дати й слота (`available_slots`, кешований каталог через `'use cache'` + динамічні слоти в `<Suspense>`), форма клієнта з автовизначенням поясу й Turnstile + rate-limit (`50/IP`, `5/email` за 10 хв), перфорований квиток підтвердження + `.ics` + `/manage/[token]`.
-- ⏭️ **Наступний — 8. Керування записом за посиланням (`/manage/[token]`)**: скасування й перенесення до дедлайну.
-- Далі 9–16 за планом.
+- ✅ 8. Керування записом за посиланням (`/manage/[token]`): перегляд деталей без PII (`get_booking_by_token`), перенесення зі зміною майстра або «Anyone available» через `available_slots_excluding` (суміжні сусідні слоти не блокуються власним записом), скасування з вивільненням слота, контроль дедлайну (`cancellation_deadline_hours`) та 30-денного вікна актуальності, Turnstile + rate-limit (`30/IP`, `15/token`), `.ics`.
+- ✅ 9. Календар адмінки (`/dashboard` календар день / тиждень по працівниках): денна й тижнева сітки з відображенням робочих змін, time off, перекриття блоків і ролевою ізоляцією (`Owner`/`Manager` бачать усіх, `Staff` — лише свій `staff_id`); фільтрований список записів і переходи `confirmed → completed / no_show / cancelled` (`update_booking_status`); ручний/walk-in запис без вимоги `min_notice_minutes` і email з поверненням `/manage/[token]` (`create_manual_booking`); двокрокове видалення персональних даних клієнта (`erase_booking_customer_data` лише для `Owner`/`Manager`).
+- ⏭️ **Наступний — 10. Сповіщення (`notification_outbox` → Telegram-бот)**: прив'язка чату кодом, нагадування через Supabase Cron, `.ics`-підписка для працівника.
+- Далі 11–16 за планом.
 
 ## База даних (`supabase/`)
 
-- Міграції: `20261115100000_core_schema.sql`, `…100100_rls_policies.sql`, `…100200_available_slots.sql`, `…100300_create_booking.sql`, `…100400_onboarding.sql`, `…100500_admin_and_invites.sql`, `…100600_public_booking.sql`.
-- Тести: `supabase/tests/database/000…070_*.test.sql` (160 перевірок, включно з DST для Kyiv і New York, онбордингом, адмінкою, інвайтами та публічним бронюванням з `p_notes` і rate-limit за email). Після E2E-прогонів перед `pnpm test:db` запускати `pnpm db:reset`.
+- Міграції: `20261115100000_core_schema.sql`, `…100100_rls_policies.sql`, `…100200_available_slots.sql`, `…100300_create_booking.sql`, `…100400_onboarding.sql`, `…100500_admin_and_invites.sql`, `…100600_public_booking.sql`, `…100700_manage_booking.sql`, `…100800_dashboard_bookings.sql`.
+- Тести: `supabase/tests/database/000…090_*.test.sql` (200 перевірок, включно з DST для Kyiv і New York, онбордингом, адмінкою, інвайтами, публічним бронюванням, керуванням за токеном та календарними/адмінськими RPC `create_manual_booking`, `update_booking_status`, `erase_booking_customer_data`). Після E2E-прогонів перед `pnpm test:db` запускати `pnpm db:reset`.
 - Ключові рішення: `bookings.blocked_until` (кінець буфера зберігається, бо `timestamptz + interval` не IMMUTABLE); exclusion constraint `(staff_id, [starts_at, blocked_until)) where status = 'confirmed'`; хелпери RLS у схемі `private` (`business_ids_with_role`, `own_staff_ids`); анонім не має привілеїв на таблиці з персональними даними; `create_booking` — security definer, будь-яка відмова → `P0001 slot_unavailable`, токен керування — лише SHA-256 у БД.
 - Свідомо відкладено: RPC створення бізнесу (етап 5), ліміти тарифу (11), гонка двох вкладок — Playwright (12), «змінені години» з додатковим часом.
 
@@ -62,9 +66,9 @@
 ```bash
 pnpm lint
 pnpm typecheck
-pnpm test:run          # 63 Vitest
-pnpm db:reset && pnpm test:db  # 160 pgTAP (потрібен локальний Supabase; db:reset чистить рядки після E2E)
-pnpm test:e2e          # 16 Playwright + axe (chromium + mobile-chromium)
+pnpm test:run          # 78 Vitest
+pnpm db:reset && pnpm test:db  # 200 pgTAP (потрібен локальний Supabase; db:reset чистить рядки після E2E)
+pnpm test:e2e          # 22 Playwright + axe (chromium + mobile-chromium)
 ```
 
 ## Налаштування нового середовища

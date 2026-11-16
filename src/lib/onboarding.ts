@@ -35,6 +35,24 @@ type InvitationSummary = Pick<
   Database["public"]["Tables"]["business_invitations"]["Row"],
   "id" | "role" | "staff_id" | "expires_at" | "created_at"
 >;
+export type BookingSummary = Pick<
+  Database["public"]["Tables"]["bookings"]["Row"],
+  | "id"
+  | "staff_id"
+  | "service_id"
+  | "starts_at"
+  | "ends_at"
+  | "blocked_until"
+  | "status"
+  | "customer_name"
+  | "customer_email"
+  | "customer_phone"
+  | "customer_timezone"
+  | "notes"
+  | "created_at"
+  | "cancelled_at"
+  | "erased_at"
+>;
 
 export type OnboardingContext = {
   userId: string;
@@ -55,6 +73,8 @@ export type DashboardData = OnboardingContext & {
   timeOff: TimeOffSummary[];
   members: MemberSummary[];
   invitations: InvitationSummary[];
+  bookings: BookingSummary[];
+  nowIso: string;
 };
 
 /**
@@ -139,6 +159,7 @@ export async function getOnboardingContext(): Promise<OnboardingContext> {
  */
 export async function getDashboardData(): Promise<DashboardData> {
   const ctx = await getOnboardingContext();
+  const nowIso = new Date().toISOString();
 
   if (!ctx.business || !ctx.membership) {
     return {
@@ -147,6 +168,8 @@ export async function getDashboardData(): Promise<DashboardData> {
       timeOff: [],
       members: [],
       invitations: [],
+      bookings: [],
+      nowIso,
     };
   }
 
@@ -154,31 +177,43 @@ export async function getDashboardData(): Promise<DashboardData> {
   const businessId = ctx.business.id;
   const isOwner = ctx.membership.role === "owner";
 
-  const [{ data: staffServices }, { data: timeOff }, { data: members }, { data: invitations }] =
-    await Promise.all([
-      supabase
-        .from("staff_services")
-        .select("staff_id, service_id")
-        .eq("business_id", businessId),
-      supabase
-        .from("time_off")
-        .select("id, staff_id, period, reason")
-        .eq("business_id", businessId)
-        .order("period", { ascending: true }),
-      supabase
-        .from("business_members")
-        .select("user_id, role, created_at")
-        .eq("business_id", businessId)
-        .order("created_at", { ascending: true }),
-      isOwner
-        ? supabase
-            .from("business_invitations")
-            .select("id, role, staff_id, expires_at, created_at")
-            .eq("business_id", businessId)
-            .is("accepted_at", null)
-            .order("created_at", { ascending: false })
-        : Promise.resolve({ data: [] as InvitationSummary[] }),
-    ]);
+  const [
+    { data: staffServices },
+    { data: timeOff },
+    { data: members },
+    { data: invitations },
+    { data: bookings },
+  ] = await Promise.all([
+    supabase
+      .from("staff_services")
+      .select("staff_id, service_id")
+      .eq("business_id", businessId),
+    supabase
+      .from("time_off")
+      .select("id, staff_id, period, reason")
+      .eq("business_id", businessId)
+      .order("period", { ascending: true }),
+    supabase
+      .from("business_members")
+      .select("user_id, role, created_at")
+      .eq("business_id", businessId)
+      .order("created_at", { ascending: true }),
+    isOwner
+      ? supabase
+          .from("business_invitations")
+          .select("id, role, staff_id, expires_at, created_at")
+          .eq("business_id", businessId)
+          .is("accepted_at", null)
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [] as InvitationSummary[] }),
+    supabase
+      .from("bookings")
+      .select(
+        "id, staff_id, service_id, starts_at, ends_at, blocked_until, status, customer_name, customer_email, customer_phone, customer_timezone, notes, created_at, cancelled_at, erased_at",
+      )
+      .eq("business_id", businessId)
+      .order("starts_at", { ascending: true }),
+  ]);
 
   return {
     ...ctx,
@@ -186,6 +221,8 @@ export async function getDashboardData(): Promise<DashboardData> {
     timeOff: timeOff ?? [],
     members: members ?? [],
     invitations: invitations ?? [],
+    bookings: (bookings ?? []) as BookingSummary[],
+    nowIso,
   };
 }
 

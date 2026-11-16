@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildBookingDateDays,
+  computeSlotsFetchRange,
   formatPriceCents,
   groupAvailableSlotsByDate,
+  MAX_SLOTS_RPC_WINDOW_MS,
 } from "./booking-slots";
 
 describe("booking-slots helpers", () => {
@@ -47,5 +49,20 @@ describe("booking-slots helpers", () => {
     expect(formatPriceCents(3550, "USD")).toBe("$35.50");
     expect(formatPriceCents(0, "USD")).toBe("Free");
     expect(formatPriceCents(null, "USD")).toBeNull();
+  });
+
+  it("bounds slot RPC windows cleanly from either now or a future start", () => {
+    const baseMs = Date.parse("2026-11-17T08:00:00.000Z");
+    const fromNow = computeSlotsFetchRange(undefined, baseMs);
+    expect(fromNow.startIso).toBe("2026-11-17T08:00:00.000Z");
+    expect(Date.parse(fromNow.endIso) - Date.parse(fromNow.startIso)).toBe(
+      MAX_SLOTS_RPC_WINDOW_MS,
+    );
+
+    const pastIgnored = computeSlotsFetchRange("2026-11-16T08:00:00.000Z", baseMs);
+    expect(pastIgnored.startIso).toBe("2026-11-17T08:00:00.000Z");
+
+    const futureKept = computeSlotsFetchRange("2026-11-24T08:00:00.000Z", baseMs);
+    expect(futureKept.startIso).toBe("2026-11-24T08:00:00.000Z");
   });
 });

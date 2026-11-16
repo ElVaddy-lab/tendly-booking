@@ -1,11 +1,11 @@
 "use server";
 
-import { headers } from "next/headers";
 import { z } from "zod";
 
 import { formatPriceCents, type RawAvailableSlot } from "@/lib/booking-slots";
 import { buildBookingIcs, buildBookingIcsFilename } from "@/lib/ics";
 import { checkBookingRateLimit } from "@/lib/rate-limit";
+import { readClientRequestInfo } from "@/lib/request-info";
 import { isValidIanaTimeZone, UUID_PATTERN } from "@/lib/slug";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 import { verifyTurnstileToken } from "@/lib/turnstile";
@@ -83,22 +83,6 @@ export type CreatePublicBookingResult = {
   fieldErrors?: Record<string, string>;
   booking: ConfirmedBookingSummary | null;
 };
-
-async function readClientRequestInfo(): Promise<{ ip: string; origin: string }> {
-  const hdrs = await headers();
-  const forwarded = hdrs.get("x-forwarded-for");
-  const realIp = hdrs.get("x-real-ip");
-  const ip =
-    forwarded?.split(",")[0]?.trim() ||
-    realIp?.trim() ||
-    "unknown";
-
-  const proto = hdrs.get("x-forwarded-proto") ?? "https";
-  const host = hdrs.get("x-forwarded-host") ?? hdrs.get("host");
-  const origin = host ? `${proto}://${host}` : "https://tendly.app";
-
-  return { ip, origin };
-}
 
 export async function listPublicSlotsAction(input: {
   businessId: string;
