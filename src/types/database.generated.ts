@@ -219,7 +219,7 @@ isOneToOne: false
             }[]
                            },
 "create_booking":
-{ Args: { "p_business_id": string,"p_customer_email": string,"p_customer_name": string,"p_customer_phone"?: string,"p_customer_timezone"?: string,"p_service_id": string,"p_staff_id": string,"p_starts_at": string }; Returns: {
+{ Args: { "p_business_id": string,"p_customer_email": string,"p_customer_name": string,"p_customer_phone"?: string,"p_customer_timezone"?: string,"p_notes"?: string,"p_service_id": string,"p_staff_id": string,"p_starts_at": string }; Returns: {
               "booking_id": string,"ends_at": string,"manage_token": string,"staff_id": string,"starts_at": string
             }[]
                            },

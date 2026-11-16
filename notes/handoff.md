@@ -16,7 +16,8 @@
 | `35f57a2` | Ядро БД: схема, RLS, `available_slots`, `create_booking`, exclusion constraint, 93 pgTAP-перевірки |
 | `54dcb88` | Лендинг `/` і дизайн-система (`PRODUCT.md`, `DESIGN.md`, `.impeccable/design.json`) |
 | `f9a7d60` | Етап 5: `/sign-in`, `/sign-up`, двокроковий `/onboarding`, `create_business` і `complete_onboarding` RPC |
-| *Етап 6* | Адмінка `/dashboard`, інвайти `/invite/[token]`, візуальне узгодження всіх 7 не-Hero блоків із референсами `1.C` |
+| `c46277f` | Етап 6: адмінка `/dashboard`, інвайти `/invite/[token]`, візуальне узгодження всіх 7 не-Hero блоків із референсами `1.C` |
+| *Етап 7* | Публічна сторінка `/b/[slug]`: 4-колонкова дошка + перфорований квиток + `.ics`, міграція `20261115100600_public_booking.sql`, Turnstile, rate limit |
 
 Щоб перенести проєкт в інше середовище, потрібен або push у GitHub (лише за командою користувача), або копія папки.
 
@@ -29,13 +30,14 @@
 - ✅ Поза планом: дизайн-система і лендинг (процес impeccable, див. нижче).
 - ✅ 5. Онбординг: `/sign-in`, `/sign-up` (Supabase Auth + Turnstile), `create_business` і `complete_onboarding` RPC, перша послуга й розклад.
 - ✅ 6. Адмінка `/dashboard` (послуги, персонал, розклад, time off), інвайти `/invite/[token]` і редизайн не-Hero блоків під палітру `1.C`.
-- ⏭️ **Наступний — 7. Публічна сторінка бронювання (`/b/[slug]`)**: вибір послуги, майстра, дати й слота через `available_slots`, форма з Turnstile → `create_booking`, підтвердження + `.ics` (і підключення кнопки «Book» на лендингу).
-- Далі 8–16 за планом.
+- ✅ 7. Публічна сторінка бронювання (`/b/[slug]`): 4-колонкова дошка вибору послуги, майстра («Anyone available» або конкретний), дати й слота (`available_slots`, кешований каталог через `'use cache'` + динамічні слоти в `<Suspense>`), форма клієнта з автовизначенням поясу й Turnstile + rate-limit (`50/IP`, `5/email` за 10 хв), перфорований квиток підтвердження + `.ics` + `/manage/[token]`.
+- ⏭️ **Наступний — 8. Керування записом за посиланням (`/manage/[token]`)**: скасування й перенесення до дедлайну.
+- Далі 9–16 за планом.
 
 ## База даних (`supabase/`)
 
-- Міграції: `20261115100000_core_schema.sql`, `…100100_rls_policies.sql`, `…100200_available_slots.sql`, `…100300_create_booking.sql`, `…100400_onboarding.sql`, `…100500_admin_and_invites.sql`.
-- Тести: `supabase/tests/database/000…060_*.test.sql` (154 перевірки, включно з DST для Kyiv і New York, онбордингом, адмінкою й інвайтами).
+- Міграції: `20261115100000_core_schema.sql`, `…100100_rls_policies.sql`, `…100200_available_slots.sql`, `…100300_create_booking.sql`, `…100400_onboarding.sql`, `…100500_admin_and_invites.sql`, `…100600_public_booking.sql`.
+- Тести: `supabase/tests/database/000…070_*.test.sql` (160 перевірок, включно з DST для Kyiv і New York, онбордингом, адмінкою, інвайтами та публічним бронюванням з `p_notes` і rate-limit за email). Після E2E-прогонів перед `pnpm test:db` запускати `pnpm db:reset`.
 - Ключові рішення: `bookings.blocked_until` (кінець буфера зберігається, бо `timestamptz + interval` не IMMUTABLE); exclusion constraint `(staff_id, [starts_at, blocked_until)) where status = 'confirmed'`; хелпери RLS у схемі `private` (`business_ids_with_role`, `own_staff_ids`); анонім не має привілеїв на таблиці з персональними даними; `create_booking` — security definer, будь-яка відмова → `P0001 slot_unavailable`, токен керування — лише SHA-256 у БД.
 - Свідомо відкладено: RPC створення бізнесу (етап 5), ліміти тарифу (11), гонка двох вкладок — Playwright (12), «змінені години» з додатковим часом.
 
@@ -50,19 +52,19 @@
 
 ## Відомі відкриті пункти
 
-- Кнопка «Book» на лендингу показує статус замість справжнього запису; слоти/послуги в картці — демо-дані. Підключити до `available_slots` / `create_booking` на етапі 7 (форма → Server Action з прогресивним покращенням).
-- Немає сторінок `/sign-in`, `/sign-up`, `/demo/owner|manager|staff` (етапи 5 і 13). Тексти «One click signs you in…» і «Demo data resets every night» мають стати правдою до деплою.
-- Дві дрібні розбіжності з макетом: обідок циферблата торкається верху кружечка; людина на аватарі «Anyone» трохи праворуч (чисто виправляється перекадруванням пластини).
-- Між 861 і 1100px сторінка вже у вертикальній версії — перевірити на реальному планшеті.
+- Кнопка «Book» у Hero-картці лендингу `/` поки працює на демо-даних (`supabase/seed.sql` для `northside-barbers` створюється на етапі 13; реальний запис уже працює на `/b/[slug]`).
+- Немає маршрутів швидкого входу `/demo/owner|manager|staff` (етап 13; `/sign-in` і `/sign-up` уже працюють). Тексти «One click signs you in…» і «Demo data resets every night» мають стати правдою до деплою.
+- Дві дрібні розбіжності з макетом на `/`: обідок циферблата торкається верху кружечка; людина на аватарі «Anyone» трохи праворуч (чисто виправляється перекадруванням пластини).
+- Між 861 і 1100px головна сторінка вже у вертикальній версії — перевірити на реальному планшеті.
 
 ## Перевірки (усі зелені на момент передачі)
 
 ```bash
 pnpm lint
 pnpm typecheck
-pnpm test:run          # 53 Vitest
-pnpm test:db           # 154 pgTAP (потрібен локальний Supabase)
-pnpm test:e2e          # 12 Playwright + axe
+pnpm test:run          # 63 Vitest
+pnpm db:reset && pnpm test:db  # 160 pgTAP (потрібен локальний Supabase; db:reset чистить рядки після E2E)
+pnpm test:e2e          # 16 Playwright + axe (chromium + mobile-chromium)
 ```
 
 ## Налаштування нового середовища

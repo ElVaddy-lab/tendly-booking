@@ -75,6 +75,7 @@ export async function createBusinessAction(
     return { error: "Could not create your business. Please try again." };
   }
 
+  updateTag(`business-slug:${parsed.data.slug}`);
   redirect("/onboarding");
 }
 
