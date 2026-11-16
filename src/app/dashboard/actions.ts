@@ -4,7 +4,14 @@ import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { readClientRequestInfo } from "@/lib/request-info";
 import { parsePriceToCents, TIME_PATTERN, UUID_PATTERN } from "@/lib/slug";
+import {
+  createBillingCheckoutSession,
+  createBillingPortalSession,
+  mapPlanLimitError,
+} from "@/lib/stripe-billing";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { localDateTimeToUtcIso } from "@/lib/timezone";
 import type { Enums } from "@/types/database.generated";
@@ -16,6 +23,9 @@ export type DashboardActionState = {
   invitePath?: string | null;
   managePath?: string | null;
   createdDateKey?: string | null;
+  telegramCommand?: string | null;
+  icsPath?: string | null;
+  redirectUrl?: string | null;
 };
 
 const ROLE_RANK: Record<Enums<"member_role">, number> = {
@@ -111,6 +121,11 @@ const createTimeOffSchema = z.object({
 const deleteTimeOffSchema = z.object({
   businessId: uuidField,
   timeOffId: uuidField,
+});
+
+const staffIntegrationSchema = z.object({
+  businessId: uuidField,
+  staffId: uuidField,
 });
 
 const createInviteSchema = z.object({
@@ -291,6 +306,10 @@ export async function createServiceAction(
     .single();
 
   if (error || !created) {
+    const planLimit = mapPlanLimitError(error, "services");
+    if (planLimit) {
+      return { error: planLimit };
+    }
     return { error: "Could not add service. Please check your entries." };
   }
 
@@ -344,6 +363,10 @@ export async function toggleServiceActiveAction(
     .eq("business_id", parsed.data.businessId);
 
   if (error) {
+    const planLimit = mapPlanLimitError(error, "services");
+    if (planLimit) {
+      return { error: planLimit };
+    }
     return { error: "Could not update service status." };
   }
 
@@ -464,6 +487,10 @@ export async function createStaffAction(
     .single();
 
   if (error || !created) {
+    const planLimit = mapPlanLimitError(error, "staff");
+    if (planLimit) {
+      return { error: planLimit };
+    }
     return { error: "Could not add staff member." };
   }
 
@@ -517,6 +544,10 @@ export async function toggleStaffActiveAction(
     .eq("business_id", parsed.data.businessId);
 
   if (error) {
+    const planLimit = mapPlanLimitError(error, "staff");
+    if (planLimit) {
+      return { error: planLimit };
+    }
     return { error: "Could not update staff availability." };
   }
 
@@ -797,6 +828,10 @@ export async function createManualBookingAction(
   });
 
   if (error) {
+    const planLimit = mapPlanLimitError(error, "bookings");
+    if (planLimit) {
+      return { error: planLimit };
+    }
     if (error.message.includes("slot_unavailable") || error.code === "23P01") {
       return {
         error: "That specialist already has an overlapping booking at that time.",
@@ -897,4 +932,263 @@ export async function eraseBookingCustomerDataAction(input: {
 
   revalidatePath("/dashboard");
   return { error: null, success: "Client details erased." };
+}
+
+export async function createTelegramLinkCodeAction(
+  _prevState: DashboardActionState,
+  formData: FormData,
+): Promise<DashboardActionState> {
+  const parsed = staffIntegrationSchema.safeParse({
+    businessId: formData.get("businessId"),
+    staffId: formData.get("staffId"),
+  });
+  if (!parsed.success) {
+    return firstValidationError(parsed.error);
+  }
+
+  const actor = await requireActor(parsed.data.businessId, "staff");
+  if (!actor.ok) {
+    return { error: actor.error };
+  }
+
+  const { data, error } = await actor.supabase.rpc("create_telegram_link_code", {
+    p_business_id: parsed.data.businessId,
+    p_staff_id: parsed.data.staffId,
+  });
+
+  const row = Array.isArray(data) ? data[0] : data;
+  if (error || !row?.link_code) {
+    if (error?.code === "42501") {
+      return { error: "You can only connect Telegram for your own staff profile." };
+    }
+    return { error: "Could not create Telegram link code." };
+  }
+
+  revalidatePath("/dashboard");
+  return {
+    error: null,
+    success: "Telegram link code ready (expires in 15 minutes).",
+    telegramCommand: `/start ${row.link_code}`,
+  };
+}
+
+export async function unlinkStaffTelegramAction(
+  _prevState: DashboardActionState,
+  formData: FormData,
+): Promise<DashboardActionState> {
+  const parsed = staffIntegrationSchema.safeParse({
+    businessId: formData.get("businessId"),
+    staffId: formData.get("staffId"),
+  });
+  if (!parsed.success) {
+    return firstValidationError(parsed.error);
+  }
+
+  const actor = await requireActor(parsed.data.businessId, "staff");
+  if (!actor.ok) {
+    return { error: actor.error };
+  }
+
+  const { error } = await actor.supabase.rpc("unlink_staff_telegram", {
+    p_business_id: parsed.data.businessId,
+    p_staff_id: parsed.data.staffId,
+  });
+
+  if (error) {
+    if (error.code === "42501") {
+      return { error: "You can only disconnect Telegram for your own staff profile." };
+    }
+    return { error: "Could not disconnect Telegram." };
+  }
+
+  revalidatePath("/dashboard");
+  return { error: null, success: "Telegram disconnected." };
+}
+
+export async function rotateStaffIcsTokenAction(
+  _prevState: DashboardActionState,
+  formData: FormData,
+): Promise<DashboardActionState> {
+  const parsed = staffIntegrationSchema.safeParse({
+    businessId: formData.get("businessId"),
+    staffId: formData.get("staffId"),
+  });
+  if (!parsed.success) {
+    return firstValidationError(parsed.error);
+  }
+
+  const actor = await requireActor(parsed.data.businessId, "staff");
+  if (!actor.ok) {
+    return { error: actor.error };
+  }
+
+  const { data, error } = await actor.supabase.rpc("rotate_staff_ics_token", {
+    p_business_id: parsed.data.businessId,
+    p_staff_id: parsed.data.staffId,
+  });
+
+  const row = Array.isArray(data) ? data[0] : data;
+  if (error || !row?.ics_token) {
+    if (error?.code === "42501") {
+      return { error: "You can only manage the calendar feed for your own staff profile." };
+    }
+    return { error: "Could not create calendar feed link." };
+  }
+
+  revalidatePath("/dashboard");
+  return {
+    error: null,
+    success: "Calendar feed link ready. Save or subscribe with this URL.",
+    icsPath: `/api/cal/${row.ics_token}`,
+  };
+}
+
+export async function revokeStaffIcsTokenAction(
+  _prevState: DashboardActionState,
+  formData: FormData,
+): Promise<DashboardActionState> {
+  const parsed = staffIntegrationSchema.safeParse({
+    businessId: formData.get("businessId"),
+    staffId: formData.get("staffId"),
+  });
+  if (!parsed.success) {
+    return firstValidationError(parsed.error);
+  }
+
+  const actor = await requireActor(parsed.data.businessId, "staff");
+  if (!actor.ok) {
+    return { error: actor.error };
+  }
+
+  const { error } = await actor.supabase.rpc("revoke_staff_ics_token", {
+    p_business_id: parsed.data.businessId,
+    p_staff_id: parsed.data.staffId,
+  });
+
+  if (error) {
+    if (error.code === "42501") {
+      return { error: "You can only revoke the calendar feed for your own staff profile." };
+    }
+    return { error: "Could not revoke calendar feed link." };
+  }
+
+  revalidatePath("/dashboard");
+  return { error: null, success: "Calendar feed revoked." };
+}
+
+const billingSessionSchema = z.object({
+  businessId: uuidField,
+});
+
+function normalizeRequestOrigin(origin: string): string {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (
+    origin.startsWith("https://localhost") ||
+    origin.startsWith("https://127.0.0.1")
+  ) {
+    return siteUrl && siteUrl.startsWith("http://")
+      ? siteUrl.replace(/\/+$/, "")
+      : origin.replace(/^https:\/\//, "http://");
+  }
+  return origin;
+}
+
+export async function createCheckoutSessionAction(
+  _prevState: DashboardActionState,
+  formData: FormData,
+): Promise<DashboardActionState> {
+  const parsed = billingSessionSchema.safeParse({
+    businessId: formData.get("businessId"),
+  });
+  if (!parsed.success) {
+    return firstValidationError(parsed.error);
+  }
+
+  const actor = await requireActor(parsed.data.businessId, "owner");
+  if (!actor.ok) {
+    return { error: actor.error };
+  }
+
+  const adminSupabase = createAdminSupabaseClient();
+  const [{ data: businessRow }, { data: subRow }, { data: userData }, requestInfo] =
+    await Promise.all([
+      adminSupabase
+        .from("businesses")
+        .select("name")
+        .eq("id", parsed.data.businessId)
+        .maybeSingle(),
+      adminSupabase
+        .from("business_subscriptions")
+        .select("stripe_customer_id")
+        .eq("business_id", parsed.data.businessId)
+        .maybeSingle(),
+      actor.supabase.auth.getUser(),
+      readClientRequestInfo(),
+    ]);
+
+  const ownerEmail = userData.user?.email ?? "";
+  if (!ownerEmail) {
+    return { error: "A verified account email is required before starting checkout." };
+  }
+
+  const result = await createBillingCheckoutSession({
+    businessId: parsed.data.businessId,
+    businessName: businessRow?.name ?? "Tendly Shop",
+    ownerEmail,
+    origin: normalizeRequestOrigin(requestInfo.origin),
+    stripeCustomerId: subRow?.stripe_customer_id ?? null,
+  });
+
+  if (!result.ok) {
+    return { error: result.error };
+  }
+
+  return {
+    error: null,
+    success: null,
+    redirectUrl: result.url,
+  };
+}
+
+export async function createPortalSessionAction(
+  _prevState: DashboardActionState,
+  formData: FormData,
+): Promise<DashboardActionState> {
+  const parsed = billingSessionSchema.safeParse({
+    businessId: formData.get("businessId"),
+  });
+  if (!parsed.success) {
+    return firstValidationError(parsed.error);
+  }
+
+  const actor = await requireActor(parsed.data.businessId, "owner");
+  if (!actor.ok) {
+    return { error: actor.error };
+  }
+
+  const adminSupabase = createAdminSupabaseClient();
+  const [{ data: subRow }, requestInfo] = await Promise.all([
+    adminSupabase
+      .from("business_subscriptions")
+      .select("stripe_customer_id")
+      .eq("business_id", parsed.data.businessId)
+      .maybeSingle(),
+    readClientRequestInfo(),
+  ]);
+
+  const result = await createBillingPortalSession({
+    businessId: parsed.data.businessId,
+    origin: normalizeRequestOrigin(requestInfo.origin),
+    stripeCustomerId: subRow?.stripe_customer_id ?? null,
+  });
+
+  if (!result.ok) {
+    return { error: result.error };
+  }
+
+  return {
+    error: null,
+    success: null,
+    redirectUrl: result.url,
+  };
 }

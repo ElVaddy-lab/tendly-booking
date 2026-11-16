@@ -18,8 +18,9 @@
 | `f9a7d60` | Етап 5: `/sign-in`, `/sign-up`, двокроковий `/onboarding`, `create_business` і `complete_onboarding` RPC |
 | `c46277f` | Етап 6: адмінка `/dashboard`, інвайти `/invite/[token]`, візуальне узгодження всіх 7 не-Hero блоків із референсами `1.C` |
 | `f0671db` | Етап 7: публічна сторінка `/b/[slug]`: 4-колонкова дошка + перфорований квиток + `.ics`, міграція `20261115100600_public_booking.sql`, Turnstile, rate limit |
-| *Етап 8* | Керування записом `/manage/[token]`: скасування, перенесення (`available_slots_excluding`), міграція `20261115100700_manage_booking.sql`, Turnstile, rate limit |
-| *Етап 9* | Календар `/dashboard` (день / тиждень по працівниках), список і статуси записів, ручний запис, видалення ПД клієнта (`erase_booking_customer_data`), міграція `20261115100800_dashboard_bookings.sql` |
+| `6b2a9af` | Етапи 8–9: `/manage/[token]` + календар `/dashboard` (день/тиждень, статуси, ручний запис, GDPR-видалення ПД клієнта), міграції `…100700`–`…100800` |
+| *Етап 10* | Сповіщення (`notification_outbox` + тригери), Telegram-бот (`/api/webhooks/telegram`, `/start <код>`), Supabase Cron + `/api/cron/reminders`, `.ics`-підписка (`/api/cal/[token]`), міграція `20261115100900_notifications_and_ics.sql` |
+| *Етап 11* | Stripe-білінг (`stripe:setup`, Checkout, Customer Portal, `/api/webhooks/stripe` із сирим підписом і `stripe_events`), ліміти Free/Pro у БД та `/dashboard`, міграція `20261115101000_billing_and_limits.sql` |
 
 Щоб перенести проєкт в інше середовище, потрібен або push у GitHub (лише за командою користувача), або копія папки.
 
@@ -35,15 +36,17 @@
 - ✅ 7. Публічна сторінка бронювання (`/b/[slug]`): 4-колонкова дошка вибору послуги, майстра («Anyone available» або конкретний), дати й слота (`available_slots`, кешований каталог через `'use cache'` + динамічні слоти в `<Suspense>`), форма клієнта з автовизначенням поясу й Turnstile + rate-limit (`50/IP`, `5/email` за 10 хв), перфорований квиток підтвердження + `.ics` + `/manage/[token]`.
 - ✅ 8. Керування записом за посиланням (`/manage/[token]`): перегляд деталей без PII (`get_booking_by_token`), перенесення зі зміною майстра або «Anyone available» через `available_slots_excluding` (суміжні сусідні слоти не блокуються власним записом), скасування з вивільненням слота, контроль дедлайну (`cancellation_deadline_hours`) та 30-денного вікна актуальності, Turnstile + rate-limit (`30/IP`, `15/token`), `.ics`.
 - ✅ 9. Календар адмінки (`/dashboard` календар день / тиждень по працівниках): денна й тижнева сітки з відображенням робочих змін, time off, перекриття блоків і ролевою ізоляцією (`Owner`/`Manager` бачать усіх, `Staff` — лише свій `staff_id`); фільтрований список записів і переходи `confirmed → completed / no_show / cancelled` (`update_booking_status`); ручний/walk-in запис без вимоги `min_notice_minutes` і email з поверненням `/manage/[token]` (`create_manual_booking`); двокрокове видалення персональних даних клієнта (`erase_booking_customer_data` лише для `Owner`/`Manager`).
-- ⏭️ **Наступний — 10. Сповіщення (`notification_outbox` → Telegram-бот)**: прив'язка чату кодом, нагадування через Supabase Cron, `.ics`-підписка для працівника.
-- Далі 11–16 за планом.
+- ✅ 10. Сповіщення (`notification_outbox` → Telegram-бот), Supabase Cron та `.ics`-підписка: прив'язка Telegram-чату одноразовим `/start <код>` через вебхук `/api/webhooks/telegram`; тригери черги на створення, перенесення й скасування; щоденний дайджест `enqueue_daily_staff_reminders` (`pg_cron`, ідемпотентний `dedupe_key`) та `/api/cron/reminders` із `CRON_SECRET`; приватна `.ics`-підписка `/api/cal/[token]` із ротацією/відкликанням і маскуванням стертих даних; колонковий захист `telegram_chat_id` і хешів у `public.staff`.
+- ✅ 11. Stripe: продукт і ціна $19/міс у sandbox (`scripts/stripe-setup.mjs` / `pnpm stripe:setup`), Stripe Checkout і Customer Portal (`createBillingCheckoutSession` / `createBillingPortalSession`), вебхук `/api/webhooks/stripe` (перевірка сирого підпису, дедуплікація в `stripe_events`, канонічний `subscriptions.retrieve`, без підняття тарифу по query-параметру `?billing=success`), DB-тригери лімітів (`Free`: 3 staff / 5 services / 100 bookings/міс; `Pro`: 10 staff / ∞ services / ∞ bookings) і UI-розділ `Plan & billing` + квоти в `/dashboard`.
+- ⏭️ **Наступний — 12. Якість**: E2E (включно з гонкою двох вкладок), axe, Lighthouse, ручний чекліст оплати й DST.
+- Далі 13–16 за планом.
 
 ## База даних (`supabase/`)
 
-- Міграції: `20261115100000_core_schema.sql`, `…100100_rls_policies.sql`, `…100200_available_slots.sql`, `…100300_create_booking.sql`, `…100400_onboarding.sql`, `…100500_admin_and_invites.sql`, `…100600_public_booking.sql`, `…100700_manage_booking.sql`, `…100800_dashboard_bookings.sql`.
-- Тести: `supabase/tests/database/000…090_*.test.sql` (200 перевірок, включно з DST для Kyiv і New York, онбордингом, адмінкою, інвайтами, публічним бронюванням, керуванням за токеном та календарними/адмінськими RPC `create_manual_booking`, `update_booking_status`, `erase_booking_customer_data`). Після E2E-прогонів перед `pnpm test:db` запускати `pnpm db:reset`.
+- Міграції: `20261115100000_core_schema.sql`, `…100100_rls_policies.sql`, `…100200_available_slots.sql`, `…100300_create_booking.sql`, `…100400_onboarding.sql`, `…100500_admin_and_invites.sql`, `…100600_public_booking.sql`, `…100700_manage_booking.sql`, `…100800_dashboard_bookings.sql`, `…100900_notifications_and_ics.sql`, `…101000_billing_and_limits.sql`.
+- Тести: `supabase/tests/database/000…110_*.test.sql` (255 перевірок, включно з DST для Kyiv і New York, онбордингом, адмінкою, інвайтами, публічним бронюванням, керуванням за токеном, адмін-календарем, сповіщеннями / Telegram / `.ics`-підписками та Stripe-підписками й лімітами тарифів). Після E2E-прогонів перед `pnpm test:db` запускати `pnpm db:reset`.
 - Ключові рішення: `bookings.blocked_until` (кінець буфера зберігається, бо `timestamptz + interval` не IMMUTABLE); exclusion constraint `(staff_id, [starts_at, blocked_until)) where status = 'confirmed'`; хелпери RLS у схемі `private` (`business_ids_with_role`, `own_staff_ids`); анонім не має привілеїв на таблиці з персональними даними; `create_booking` — security definer, будь-яка відмова → `P0001 slot_unavailable`, токен керування — лише SHA-256 у БД.
-- Свідомо відкладено: RPC створення бізнесу (етап 5), ліміти тарифу (11), гонка двох вкладок — Playwright (12), «змінені години» з додатковим часом.
+- Свідомо відкладено: RPC створення бізнесу (етап 5), ліміти тарифу (реалізовано на етапі 11), гонка двох вкладок — Playwright (12), «змінені години» з додатковим часом.
 
 ## Лендинг і дизайн-система
 
@@ -66,9 +69,9 @@
 ```bash
 pnpm lint
 pnpm typecheck
-pnpm test:run          # 78 Vitest
-pnpm db:reset && pnpm test:db  # 200 pgTAP (потрібен локальний Supabase; db:reset чистить рядки після E2E)
-pnpm test:e2e          # 22 Playwright + axe (chromium + mobile-chromium)
+pnpm test:run          # 99 Vitest
+pnpm db:reset && pnpm test:db  # 255 pgTAP (потрібен локальний Supabase; db:reset чистить рядки після E2E)
+pnpm test:e2e          # 26 Playwright + axe (chromium + mobile-chromium)
 ```
 
 ## Налаштування нового середовища

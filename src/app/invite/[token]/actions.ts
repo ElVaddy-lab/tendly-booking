@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { mapPlanLimitError } from "@/lib/stripe-billing";
 import { createClient } from "@/lib/supabase/server";
 
 export type AcceptInviteState = {
@@ -46,6 +47,10 @@ export async function acceptInvitationAction(
   });
 
   if (error) {
+    const planLimitMessage = mapPlanLimitError(error, "staff");
+    if (planLimitMessage) {
+      return { error: planLimitMessage };
+    }
     if (
       error.message.includes("already_belongs") ||
       error.message.includes("already_member") ||

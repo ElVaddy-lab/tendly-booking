@@ -7,6 +7,7 @@ import { buildBookingIcs, buildBookingIcsFilename } from "@/lib/ics";
 import { checkBookingRateLimit } from "@/lib/rate-limit";
 import { readClientRequestInfo } from "@/lib/request-info";
 import { isValidIanaTimeZone, UUID_PATTERN } from "@/lib/slug";
+import { mapPlanLimitError } from "@/lib/stripe-billing";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { fetchAvailableSlotsWindow, getPublicBusinessCatalog } from "./data";
@@ -77,6 +78,7 @@ export type CreatePublicBookingResult = {
     | "turnstile_failed"
     | "rate_limit"
     | "slot_unavailable"
+    | "plan_limit"
     | "invalid_target"
     | "unknown"
     | null;
@@ -196,6 +198,14 @@ export async function createPublicBookingAction(input: {
       return {
         error: "Too many booking requests for this email. Please wait a few minutes and try again.",
         code: "rate_limit",
+        booking: null,
+      };
+    }
+    const planLimitMessage = mapPlanLimitError(error, "bookings");
+    if (planLimitMessage) {
+      return {
+        error: planLimitMessage,
+        code: "plan_limit",
         booking: null,
       };
     }

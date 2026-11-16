@@ -4,19 +4,26 @@ import Link from "next/link";
 import { useActionState, useEffect, useRef, useState, useSyncExternalStore, useTransition } from "react";
 
 import {
+  createCheckoutSessionAction,
   createInvitationAction,
+  createPortalSessionAction,
   createServiceAction,
   createStaffAction,
+  createTelegramLinkCodeAction,
   createTimeOffAction,
   deleteServiceAction,
   deleteTimeOffAction,
   revokeInvitationAction,
+  revokeStaffIcsTokenAction,
+  rotateStaffIcsTokenAction,
   toggleServiceActiveAction,
   toggleStaffActiveAction,
+  unlinkStaffTelegramAction,
   updateServiceStaffAction,
   updateStaffScheduleAction,
   type DashboardActionState,
 } from "./actions";
+import type { BusinessPlanUsage } from "@/lib/stripe-billing";
 import styles from "./dashboard.module.css";
 
 const INITIAL_STATE: DashboardActionState = { error: null };
@@ -879,5 +886,392 @@ export function InviteMemberForm({
         </div>
       ) : null}
     </section>
+  );
+}
+
+export function StaffIntegrationsEditor({
+  businessId,
+  staffId,
+  staffName,
+  telegramLinkedAt,
+  icsEnabledAt,
+}: {
+  businessId: string;
+  staffId: string;
+  staffName: string;
+  telegramLinkedAt: string | null;
+  icsEnabledAt: string | null;
+}) {
+  const [tgCodeState, tgCodeAction, tgCodePending] = useActionState(
+    createTelegramLinkCodeAction,
+    INITIAL_STATE,
+  );
+  const [tgUnlinkState, tgUnlinkAction, tgUnlinkPending] = useActionState(
+    unlinkStaffTelegramAction,
+    INITIAL_STATE,
+  );
+  const [icsRotateState, icsRotateAction, icsRotatePending] = useActionState(
+    rotateStaffIcsTokenAction,
+    INITIAL_STATE,
+  );
+  const [icsRevokeState, icsRevokeAction, icsRevokePending] = useActionState(
+    revokeStaffIcsTokenAction,
+    INITIAL_STATE,
+  );
+
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
+  const origin = useSyncExternalStore(
+    emptySubscribe,
+    getOriginSnapshot,
+    getServerOriginSnapshot,
+  );
+
+  const telegramCommand = tgCodeState.telegramCommand ?? null;
+  const icsPath = icsRotateState.icsPath ?? null;
+  const fullIcsUrl = icsPath && origin ? `${origin}${icsPath}` : null;
+
+  async function copyText(value: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedValue(value);
+      window.setTimeout(() => setCopiedValue(null), 2500);
+    } catch {
+      setCopiedValue(null);
+    }
+  }
+
+  return (
+    <details className={styles.inlineDisclosure}>
+      <summary className={styles.disclosureTrigger}>Telegram &amp; calendar (.ics)</summary>
+      <div className={styles.disclosureBody}>
+        <div className={styles.integrationSection}>
+          <div className={styles.integrationHeader}>
+            <span className={styles.label}>Telegram notifications</span>
+            <p className={styles.itemSubmeta}>
+              {telegramLinkedAt
+                ? "Telegram alerts are connected for this specialist."
+                : "Generate a one-time /start command and send it to the Tendly bot."}
+            </p>
+          </div>
+
+          <div className={styles.integrationActions}>
+            <form action={tgCodeAction}>
+              <input type="hidden" name="businessId" value={businessId} />
+              <input type="hidden" name="staffId" value={staffId} />
+              <button
+                type="submit"
+                disabled={tgCodePending || tgUnlinkPending}
+                className={styles.secondaryButton}
+              >
+                {tgCodePending
+                  ? "Generating..."
+                  : telegramLinkedAt
+                    ? "New link code"
+                    : "Connect Telegram"}
+              </button>
+            </form>
+
+            {telegramLinkedAt ? (
+              <form action={tgUnlinkAction}>
+                <input type="hidden" name="businessId" value={businessId} />
+                <input type="hidden" name="staffId" value={staffId} />
+                <button
+                  type="submit"
+                  disabled={tgCodePending || tgUnlinkPending}
+                  className={styles.dangerButton}
+                >
+                  {tgUnlinkPending ? "Disconnecting..." : "Disconnect Telegram"}
+                </button>
+              </form>
+            ) : null}
+          </div>
+
+          <ActionFeedback state={tgCodeState} />
+          <ActionFeedback state={tgUnlinkState} />
+
+          {telegramCommand ? (
+            <div className={styles.inviteBox}>
+              <label htmlFor={`tg-cmd-${staffId}`} className={styles.label}>
+                Bot command (expires in 15 min)
+              </label>
+              <div className={styles.inviteRow}>
+                <input
+                  id={`tg-cmd-${staffId}`}
+                  type="text"
+                  readOnly
+                  aria-label={`Telegram start command for ${staffName}`}
+                  value={telegramCommand}
+                  className={styles.inviteInput}
+                />
+                <button
+                  type="button"
+                  onClick={() => copyText(telegramCommand)}
+                  className={styles.secondaryButton}
+                >
+                  {copiedValue === telegramCommand ? "Copied command" : "Copy command"}
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        <div className={styles.integrationSection}>
+          <div className={styles.integrationHeader}>
+            <span className={styles.label}>Calendar subscription (.ics)</span>
+            <p className={styles.itemSubmeta}>
+              {icsEnabledAt
+                ? "Private .ics feed is active. Rotating replaces the previous URL."
+                : "Create a private .ics feed URL for Apple, Google, or Outlook Calendar."}
+            </p>
+          </div>
+
+          <div className={styles.integrationActions}>
+            <form action={icsRotateAction}>
+              <input type="hidden" name="businessId" value={businessId} />
+              <input type="hidden" name="staffId" value={staffId} />
+              <button
+                type="submit"
+                disabled={icsRotatePending || icsRevokePending}
+                className={styles.secondaryButton}
+              >
+                {icsRotatePending
+                  ? "Generating..."
+                  : icsEnabledAt
+                    ? "Rotate .ics link"
+                    : "Enable .ics feed"}
+              </button>
+            </form>
+
+            {icsEnabledAt ? (
+              <form action={icsRevokeAction}>
+                <input type="hidden" name="businessId" value={businessId} />
+                <input type="hidden" name="staffId" value={staffId} />
+                <button
+                  type="submit"
+                  disabled={icsRotatePending || icsRevokePending}
+                  className={styles.dangerButton}
+                >
+                  {icsRevokePending ? "Revoking..." : "Revoke .ics"}
+                </button>
+              </form>
+            ) : null}
+          </div>
+
+          <ActionFeedback state={icsRotateState} />
+          <ActionFeedback state={icsRevokeState} />
+
+          {icsEnabledAt && icsPath && fullIcsUrl ? (
+            <div className={styles.inviteBox}>
+              <label htmlFor={`ics-url-${staffId}`} className={styles.label}>
+                Private calendar feed URL
+              </label>
+              <div className={styles.inviteRow}>
+                <input
+                  id={`ics-url-${staffId}`}
+                  type="text"
+                  readOnly
+                  aria-label={`Calendar feed URL for ${staffName}`}
+                  value={fullIcsUrl}
+                  className={styles.inviteInput}
+                />
+                <button
+                  type="button"
+                  onClick={() => copyText(fullIcsUrl)}
+                  className={styles.secondaryButton}
+                >
+                  {copiedValue === fullIcsUrl ? "Copied .ics link" : "Copy .ics link"}
+                </button>
+                <a
+                  href={icsPath}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.secondaryLink}
+                >
+                  Open feed
+                </a>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </details>
+  );
+}
+
+function formatBillingDate(iso: string | null, timezone: string): string | null {
+  if (!iso) {
+    return null;
+  }
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: timezone,
+  }).format(date);
+}
+
+function formatPlanStatusLabel(usage: BusinessPlanUsage, timezone: string): string {
+  const periodEndLabel = formatBillingDate(usage.currentPeriodEnd, timezone);
+  if (usage.planTier === "pro") {
+    if (usage.cancelAtPeriodEnd && periodEndLabel) {
+      return `Pro active · ends ${periodEndLabel}`;
+    }
+    if (usage.subscriptionStatus === "trialing") {
+      return periodEndLabel ? `Trialing · renews ${periodEndLabel}` : "Trial active";
+    }
+    return periodEndLabel ? `Active · renews ${periodEndLabel}` : "Active subscription";
+  }
+
+  switch (usage.subscriptionStatus) {
+    case "past_due":
+    case "unpaid":
+      return "Past due — update payment method";
+    case "canceled":
+      return "Canceled — Free limits active";
+    case "paused":
+      return "Paused — Free limits active";
+    default:
+      return "Included free tier";
+  }
+}
+
+export function BillingPlanPanel({
+  businessId,
+  timezone,
+  isOwner,
+  planUsage,
+  billingNotice,
+}: {
+  businessId: string;
+  timezone: string;
+  isOwner: boolean;
+  planUsage: BusinessPlanUsage;
+  billingNotice: "success" | "cancelled" | null;
+}) {
+  const [checkoutState, checkoutAction, checkoutPending] = useActionState(
+    createCheckoutSessionAction,
+    INITIAL_STATE,
+  );
+  const [portalState, portalAction, portalPending] = useActionState(
+    createPortalSessionAction,
+    INITIAL_STATE,
+  );
+
+  useEffect(() => {
+    const targetUrl = checkoutState.redirectUrl ?? portalState.redirectUrl;
+    if (targetUrl) {
+      window.location.assign(targetUrl);
+    }
+  }, [checkoutState.redirectUrl, portalState.redirectUrl]);
+
+  const isPro = planUsage.planTier === "pro";
+  const needsAttention =
+    planUsage.subscriptionStatus === "past_due" ||
+    planUsage.subscriptionStatus === "unpaid";
+
+  return (
+    <div className={styles.restPanel}>
+      <div className={styles.billingPanelBody}>
+        {billingNotice === "success" ? (
+          <p className={styles.alertSuccess} role="status">
+            Checkout completed — your plan updates automatically once Stripe confirms the
+            payment webhook.
+          </p>
+        ) : null}
+
+        {billingNotice === "cancelled" ? (
+          <p className={styles.billingNotice} role="status">
+            Checkout was cancelled. Your shop remains on the{" "}
+            {isPro ? "Pro" : "Free"} plan.
+          </p>
+        ) : null}
+
+        <div className={styles.billingHeaderRow}>
+          <div className={styles.billingTitleGroup}>
+            <span
+              className={`${styles.billingBadge} ${
+                isPro
+                  ? styles.billingBadgePro
+                  : needsAttention
+                    ? styles.billingBadgeWarn
+                    : ""
+              }`}
+            >
+              {isPro ? "Pro plan — $19/mo" : "Free plan — $0/mo"}
+            </span>
+            <p className={styles.billingStatusText}>
+              {formatPlanStatusLabel(planUsage, timezone)}
+            </p>
+          </div>
+        </div>
+
+        <dl className={styles.billingQuotaGrid}>
+          <div className={styles.billingQuotaCard}>
+            <dt className={styles.billingQuotaLabel}>Active staff</dt>
+            <dd className={styles.billingQuotaValue}>
+              {planUsage.activeStaffCount} / {planUsage.maxStaff}
+            </dd>
+          </div>
+          <div className={styles.billingQuotaCard}>
+            <dt className={styles.billingQuotaLabel}>Active services</dt>
+            <dd className={styles.billingQuotaValue}>
+              {planUsage.activeServicesCount} /{" "}
+              {planUsage.maxServices === null ? "Unlimited" : planUsage.maxServices}
+            </dd>
+          </div>
+          <div className={styles.billingQuotaCard}>
+            <dt className={styles.billingQuotaLabel}>Bookings this month</dt>
+            <dd className={styles.billingQuotaValue}>
+              {planUsage.monthlyBookingsCount} /{" "}
+              {planUsage.maxMonthlyBookings === null
+                ? "Unlimited"
+                : planUsage.maxMonthlyBookings}
+            </dd>
+          </div>
+        </dl>
+
+        {isOwner ? (
+          <div className={styles.billingActionsRow}>
+            {!isPro ? (
+              <form action={checkoutAction}>
+                <input type="hidden" name="businessId" value={businessId} />
+                <button
+                  type="submit"
+                  disabled={checkoutPending || portalPending}
+                  className={styles.billingPrimaryButton}
+                >
+                  {checkoutPending ? "Opening Checkout..." : "Upgrade to Pro — $19/mo"}
+                </button>
+              </form>
+            ) : null}
+
+            {planUsage.hasStripeCustomer ? (
+              <form action={portalAction}>
+                <input type="hidden" name="businessId" value={businessId} />
+                <button
+                  type="submit"
+                  disabled={checkoutPending || portalPending}
+                  className={styles.secondaryButton}
+                >
+                  {portalPending ? "Opening portal..." : "Manage billing"}
+                </button>
+              </form>
+            ) : null}
+          </div>
+        ) : (
+          <p className={styles.billingNote}>
+            Only the shop owner can change the subscription or open the Stripe billing
+            portal.
+          </p>
+        )}
+
+        <ActionFeedback state={checkoutState} />
+        <ActionFeedback state={portalState} />
+      </div>
+    </div>
   );
 }

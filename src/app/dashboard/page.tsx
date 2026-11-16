@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Calendar, ClipboardList, Clock, Users } from "lucide-react";
+import { Calendar, ClipboardList, Clock, CreditCard, Users } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -12,10 +12,12 @@ import {
   AddServiceForm,
   AddStaffForm,
   AddTimeOffForm,
+  BillingPlanPanel,
   CopyBookingLinkButton,
   InlineActionButton,
   InviteMemberForm,
   ServiceStaffEditor,
+  StaffIntegrationsEditor,
   StaffScheduleEditor,
 } from "./dashboard-forms";
 import { BookingsWorkbench } from "./bookings-workbench";
@@ -64,8 +66,19 @@ function formatShortDate(iso: string): string {
   }).format(date);
 }
 
-async function DashboardContent() {
-  const ctx = await getDashboardData();
+async function DashboardContent({
+  searchParamsPromise,
+}: {
+  searchParamsPromise: Promise<{ billing?: string | string[] }>;
+}) {
+  const [ctx, resolvedSearch] = await Promise.all([
+    getDashboardData(),
+    searchParamsPromise,
+  ]);
+  const billingParam =
+    typeof resolvedSearch?.billing === "string" ? resolvedSearch.billing : null;
+  const billingNotice: "success" | "cancelled" | null =
+    billingParam === "success" || billingParam === "cancelled" ? billingParam : null;
 
   if (!ctx.business || !ctx.membership) {
     redirect("/onboarding");
@@ -87,6 +100,7 @@ async function DashboardContent() {
     members,
     invitations,
     bookings,
+    planUsage,
     nowIso,
   } = ctx;
 
@@ -159,12 +173,18 @@ async function DashboardContent() {
               <Clock className={styles.sideNavIcon} aria-hidden="true" strokeWidth={1.75} />
               Time off
             </a>
+            <a href="#billing" className={styles.sideNavLink}>
+              <CreditCard className={styles.sideNavIcon} aria-hidden="true" strokeWidth={1.75} />
+              Plan &amp; billing
+            </a>
           </nav>
         </div>
 
         <div className={styles.sidebarFooter}>
           <p className={styles.planQuota}>
-            Free plan: {activeStaffCount}/3 staff · {activeServicesCount}/5 services
+            {planUsage.planTier === "pro"
+              ? `Pro plan: ${planUsage.activeStaffCount}/${planUsage.maxStaff} staff · Unlimited services & bookings`
+              : `Free plan: ${planUsage.activeStaffCount}/${planUsage.maxStaff} staff · ${planUsage.activeServicesCount}/${planUsage.maxServices ?? 5} services · ${planUsage.monthlyBookingsCount}/${planUsage.maxMonthlyBookings ?? 100} mo`}
           </p>
           {ctx.email ? <p className={styles.sidebarEmail}>{ctx.email}</p> : null}
           <form action={signOutAction}>
@@ -337,6 +357,12 @@ async function DashboardContent() {
                               <span className={styles.panelMeta}>
                                 {member.is_active ? "Active" : "Inactive"}
                               </span>
+                              {member.telegram_linked_at ? (
+                                <span className={styles.pillTag}>Telegram linked</span>
+                              ) : null}
+                              {member.ics_enabled_at ? (
+                                <span className={styles.pillTag}>.ics feed</span>
+                              ) : null}
                             </div>
 
                             {canManage ? (
@@ -375,6 +401,16 @@ async function DashboardContent() {
                               staffId={member.id}
                               staffName={member.display_name}
                               initialHours={memberHours}
+                            />
+                          ) : null}
+
+                          {canManage || isOwnProfile ? (
+                            <StaffIntegrationsEditor
+                              businessId={business.id}
+                              staffId={member.id}
+                              staffName={member.display_name}
+                              telegramLinkedAt={member.telegram_linked_at}
+                              icsEnabledAt={member.ics_enabled_at}
                             />
                           ) : null}
                         </section>
@@ -541,6 +577,29 @@ async function DashboardContent() {
                 </div>
               ) : null}
             </section>
+
+            <section
+              id="billing"
+              className={styles.sectionBlock}
+              aria-labelledby="billing-heading"
+            >
+              <div className={styles.sectionHeadingRow}>
+                <h2 id="billing-heading" className={styles.sectionTitle}>
+                  Plan &amp; billing
+                </h2>
+                <span className={styles.panelMeta}>
+                  {planUsage.planTier === "pro" ? "Pro · $19/mo" : "Free · $0/mo"}
+                </span>
+              </div>
+
+              <BillingPlanPanel
+                businessId={business.id}
+                timezone={business.timezone}
+                isOwner={isOwner}
+                planUsage={planUsage}
+                billingNotice={billingNotice}
+              />
+            </section>
           </div>
         </div>
       </main>
@@ -567,11 +626,15 @@ function DashboardFallback() {
   );
 }
 
-export default function DashboardPage() {
+export default function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ billing?: string | string[] }>;
+}) {
   return (
     <div className={styles.page}>
       <Suspense fallback={<DashboardFallback />}>
-        <DashboardContent />
+        <DashboardContent searchParamsPromise={searchParams} />
       </Suspense>
     </div>
   );

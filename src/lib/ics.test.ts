@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   buildBookingIcs,
   buildBookingIcsFilename,
+  buildStaffCalendarIcs,
+  buildStaffCalendarIcsFilename,
   escapeIcsText,
   formatUtcIcsTimestamp,
 } from "./ics";
@@ -52,6 +54,69 @@ describe("ics helpers", () => {
   it("builds a clean filename", () => {
     expect(buildBookingIcsFilename("northside-barbers", "2026-11-17T08:30:00Z")).toBe(
       "tendly-northside-barbers-20261117-0830.ics",
+    );
+  });
+
+  it("builds a staff subscription calendar feed with multiple events and redacts erased clients", () => {
+    const feed = buildStaffCalendarIcs({
+      businessName: "Northside Barbers",
+      businessTimezone: "Europe/Kyiv",
+      staffName: "Andriy",
+      now: new Date("2026-11-16T09:00:00Z"),
+      events: [
+        {
+          bookingId: "bk-1",
+          serviceName: "Haircut",
+          startsAtIso: "2026-11-17T08:00:00Z",
+          endsAtIso: "2026-11-17T08:30:00Z",
+          status: "confirmed",
+          customerName: "Olena Koval",
+          notes: "Scissors only",
+        },
+        {
+          bookingId: "bk-2",
+          serviceName: "Beard trim",
+          startsAtIso: "2026-11-17T10:00:00Z",
+          endsAtIso: "2026-11-17T10:20:00Z",
+          status: "completed",
+          customerName: "Erased customer",
+          notes: "Should never leak",
+          erased: true,
+        },
+      ],
+    });
+
+    const unfolded = feed.replace(/\r\n /g, "");
+    expect(feed.endsWith("\r\n")).toBe(true);
+    expect(unfolded).toContain("X-WR-CALNAME:Andriy — Northside Barbers\r\n");
+    expect(unfolded).toContain("X-WR-TIMEZONE:Europe/Kyiv\r\n");
+    expect(unfolded).toContain("REFRESH-INTERVAL;VALUE=DURATION:PT15M\r\n");
+    expect(unfolded).toContain("SUMMARY:Haircut — Olena Koval\r\n");
+    expect(unfolded).toContain("DESCRIPTION:Client: Olena Koval\\nStatus: confirmed\\nNotes: Scissors only\r\n");
+    expect(unfolded).toContain("SUMMARY:Beard trim — Client\r\n");
+    expect(unfolded).not.toContain("Erased customer");
+    expect(unfolded).not.toContain("Should never leak");
+    expect(unfolded).not.toContain("ATTENDEE");
+  });
+
+  it("builds a valid empty staff subscription feed when no bookings exist", () => {
+    const emptyFeed = buildStaffCalendarIcs({
+      businessName: "Northside Barbers",
+      businessTimezone: "Europe/Kyiv",
+      staffName: "Marta",
+      now: new Date("2026-11-16T09:00:00Z"),
+      events: [],
+    });
+
+    expect(emptyFeed).toContain("BEGIN:VCALENDAR\r\n");
+    expect(emptyFeed).toContain("X-WR-CALNAME:Marta — Northside Barbers\r\n");
+    expect(emptyFeed).not.toContain("BEGIN:VEVENT");
+    expect(emptyFeed).toContain("END:VCALENDAR\r\n");
+  });
+
+  it("builds a clean staff calendar feed filename", () => {
+    expect(buildStaffCalendarIcsFilename("northside-barbers", "Andriy Koval")).toBe(
+      "tendly-northside-barbers-andriy-koval.ics",
     );
   });
 });

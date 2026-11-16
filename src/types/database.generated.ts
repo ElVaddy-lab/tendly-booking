@@ -77,6 +77,26 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"business_subscriptions": {
+                  Row: {
+                    "business_id": string,"cancel_at_period_end": boolean,"created_at": string,"current_period_end": string | null,"current_period_start": string | null,"plan_tier": Database["public"]['Enums']["plan_tier"],"status": Database["public"]['Enums']["subscription_status"],"stripe_customer_id": string | null,"stripe_price_id": string | null,"stripe_subscription_id": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id": string,"cancel_at_period_end"?: boolean,"created_at"?: string,"current_period_end"?: string | null,"current_period_start"?: string | null,"plan_tier"?: Database["public"]['Enums']["plan_tier"],"status"?: Database["public"]['Enums']["subscription_status"],"stripe_customer_id"?: string | null,"stripe_price_id"?: string | null,"stripe_subscription_id"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "business_id"?: string,"cancel_at_period_end"?: boolean,"created_at"?: string,"current_period_end"?: string | null,"current_period_start"?: string | null,"plan_tier"?: Database["public"]['Enums']["plan_tier"],"status"?: Database["public"]['Enums']["subscription_status"],"stripe_customer_id"?: string | null,"stripe_price_id"?: string | null,"stripe_subscription_id"?: string | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "business_subscriptions_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: true
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"businesses": {
                   Row: {
                     "booking_horizon_days": number,"cancellation_deadline_hours": number,"created_at": string,"created_by": string | null,"id": string,"is_demo": boolean,"min_notice_minutes": number,"name": string,"slot_step_minutes": number,"slug": string,"timezone": string
@@ -90,6 +110,38 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"notification_outbox": {
+                  Row: {
+                    "attempt_count": number,"booking_id": string | null,"business_id": string,"created_at": string,"dedupe_key": string | null,"event_type": Database["public"]['Enums']["notification_event_type"],"id": string,"last_error": string | null,"message_text": string,"scheduled_for": string,"sent_at": string | null,"staff_id": string,"status": Database["public"]['Enums']["notification_status"],"telegram_chat_id": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "attempt_count"?: number,"booking_id"?: string | null,"business_id": string,"created_at"?: string,"dedupe_key"?: string | null,"event_type": Database["public"]['Enums']["notification_event_type"],"id"?: string,"last_error"?: string | null,"message_text": string,"scheduled_for"?: string,"sent_at"?: string | null,"staff_id": string,"status"?: Database["public"]['Enums']["notification_status"],"telegram_chat_id": number
+                  }
+                  Update: {
+                    "attempt_count"?: number,"booking_id"?: string | null,"business_id"?: string,"created_at"?: string,"dedupe_key"?: string | null,"event_type"?: Database["public"]['Enums']["notification_event_type"],"id"?: string,"last_error"?: string | null,"message_text"?: string,"scheduled_for"?: string,"sent_at"?: string | null,"staff_id"?: string,"status"?: Database["public"]['Enums']["notification_status"],"telegram_chat_id"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "notification_outbox_booking_id_fkey"
+      columns: ["booking_id"]
+isOneToOne: false
+      referencedRelation: "bookings"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "notification_outbox_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "notification_outbox_staff_id_fkey"
+      columns: ["staff_id"]
+isOneToOne: false
+      referencedRelation: "staff"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"services": {
                   Row: {
@@ -113,14 +165,14 @@ isOneToOne: false
                   ]
                 },"staff": {
                   Row: {
-                    "business_id": string,"created_at": string,"display_name": string,"id": string,"is_active": boolean,"member_user_id": string | null
+                    "business_id": string,"created_at": string,"display_name": string,"ics_enabled_at": string | null,"ics_token_hash": string | null,"id": string,"is_active": boolean,"member_user_id": string | null,"telegram_chat_id": number | null,"telegram_link_code_hash": string | null,"telegram_link_expires_at": string | null,"telegram_linked_at": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "business_id": string,"created_at"?: string,"display_name": string,"id"?: string,"is_active"?: boolean,"member_user_id"?: string | null
+                    "business_id": string,"created_at"?: string,"display_name": string,"ics_enabled_at"?: string | null,"ics_token_hash"?: string | null,"id"?: string,"is_active"?: boolean,"member_user_id"?: string | null,"telegram_chat_id"?: number | null,"telegram_link_code_hash"?: string | null,"telegram_link_expires_at"?: string | null,"telegram_linked_at"?: string | null
                   }
                   Update: {
-                    "business_id"?: string,"created_at"?: string,"display_name"?: string,"id"?: string,"is_active"?: boolean,"member_user_id"?: string | null
+                    "business_id"?: string,"created_at"?: string,"display_name"?: string,"ics_enabled_at"?: string | null,"ics_token_hash"?: string | null,"id"?: string,"is_active"?: boolean,"member_user_id"?: string | null,"telegram_chat_id"?: number | null,"telegram_link_code_hash"?: string | null,"telegram_link_expires_at"?: string | null,"telegram_linked_at"?: string | null
                   }
                   Relationships: [
                     {
@@ -155,6 +207,26 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "staff"
       referencedColumns: ["business_id","id"]
+    }
+                  ]
+                },"stripe_events": {
+                  Row: {
+                    "business_id": string | null,"event_type": string,"id": string,"processed_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id"?: string | null,"event_type": string,"id": string,"processed_at"?: string
+                  }
+                  Update: {
+                    "business_id"?: string | null,"event_type"?: string,"id"?: string,"processed_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "stripe_events_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
     }
                   ]
                 },"time_off": {
@@ -228,6 +300,11 @@ isOneToOne: false
               "service_id": string,"staff_id": string
             }[]
                            },
+"complete_telegram_link":
+{ Args: { "p_link_code": string,"p_telegram_chat_id": number }; Returns: {
+              "business_id": string,"staff_id": string,"staff_name": string
+            }[]
+                           },
 "create_booking":
 { Args: { "p_business_id": string,"p_customer_email": string,"p_customer_name": string,"p_customer_phone"?: string,"p_customer_timezone"?: string,"p_notes"?: string,"p_service_id": string,"p_staff_id": string,"p_starts_at": string }; Returns: {
               "booking_id": string,"ends_at": string,"manage_token": string,"staff_id": string,"starts_at": string
@@ -246,6 +323,14 @@ isOneToOne: false
               "booking_id": string,"ends_at": string,"manage_token": string,"staff_id": string,"starts_at": string
             }[]
                            },
+"create_telegram_link_code":
+{ Args: { "p_business_id": string,"p_staff_id": string }; Returns: {
+              "expires_at": string,"link_code": string
+            }[]
+                           },
+"enqueue_daily_staff_reminders":
+{ Args: { "p_now"?: string }; Returns: number
+                           },
 "erase_booking_customer_data":
 { Args: { "p_booking_id": string,"p_business_id": string }; Returns: {
               "booking_id": string,"erased_at": string,"status": Database["public"]['Enums']["booking_status"]
@@ -261,13 +346,34 @@ isOneToOne: false
               "business_id": string,"business_name": string,"business_slug": string,"expires_at": string,"invitation_id": string,"is_valid": boolean,"role": Database["public"]['Enums']["member_role"],"staff_id": string,"staff_name": string
             }[]
                            },
+"get_business_plan_usage":
+{ Args: { "p_business_id": string }; Returns: {
+              "active_services_count": number,"active_staff_count": number,"cancel_at_period_end": boolean,"current_period_end": string,"has_stripe_customer": boolean,"max_monthly_bookings": number,"max_services": number,"max_staff": number,"monthly_bookings_count": number,"plan_tier": Database["public"]['Enums']["plan_tier"],"subscription_status": Database["public"]['Enums']["subscription_status"]
+            }[]
+                           },
+"get_staff_calendar_feed":
+{ Args: { "p_token": string }; Returns: {
+              "booking_id": string,"business_name": string,"business_slug": string,"business_timezone": string,"customer_name": string,"ends_at": string,"notes": string,"service_name": string,"staff_name": string,"starts_at": string,"status": Database["public"]['Enums']["booking_status"]
+            }[]
+                           },
 "reschedule_booking":
 { Args: { "p_staff_id": string,"p_starts_at": string,"p_token": string }; Returns: {
               "booking_id": string,"ends_at": string,"staff_id": string,"starts_at": string
             }[]
                            },
+"revoke_staff_ics_token":
+{ Args: { "p_business_id": string,"p_staff_id": string }; Returns: undefined
+                           },
+"rotate_staff_ics_token":
+{ Args: { "p_business_id": string,"p_staff_id": string }; Returns: {
+              "enabled_at": string,"ics_token": string
+            }[]
+                           },
 "set_staff_weekly_hours":
 { Args: { "p_business_id": string,"p_hours": Json,"p_staff_id": string }; Returns: undefined
+                           },
+"unlink_staff_telegram":
+{ Args: { "p_business_id": string,"p_staff_id": string }; Returns: undefined
                            },
 "update_booking_status":
 { Args: { "p_booking_id": string,"p_business_id": string,"p_status": Database["public"]['Enums']["booking_status"] }; Returns: {
@@ -276,7 +382,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "booking_status": "confirmed"|"completed"|"no_show"|"cancelled","member_role": "staff"|"manager"|"owner"
+            "booking_status": "confirmed"|"completed"|"no_show"|"cancelled","member_role": "staff"|"manager"|"owner","notification_event_type": "booking_created"|"booking_cancelled"|"booking_rescheduled"|"daily_digest","notification_status": "pending"|"sent"|"failed","plan_tier": "free"|"pro","subscription_status": "incomplete"|"incomplete_expired"|"trialing"|"active"|"past_due"|"canceled"|"unpaid"|"paused"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -392,7 +498,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "booking_status": ["confirmed", "completed", "no_show", "cancelled"],"member_role": ["staff", "manager", "owner"]
+            "booking_status": ["confirmed", "completed", "no_show", "cancelled"],"member_role": ["staff", "manager", "owner"],"notification_event_type": ["booking_created", "booking_cancelled", "booking_rescheduled", "daily_digest"],"notification_status": ["pending", "sent", "failed"],"plan_tier": ["free", "pro"],"subscription_status": ["incomplete", "incomplete_expired", "trialing", "active", "past_due", "canceled", "unpaid", "paused"]
           }
         }
 } as const

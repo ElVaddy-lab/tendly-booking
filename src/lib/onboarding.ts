@@ -3,12 +3,18 @@ import "server-only";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import type { BusinessPlanUsage } from "@/lib/stripe-billing";
 import type { Database, Enums } from "@/types/database.generated";
 
 type BusinessRow = Database["public"]["Tables"]["businesses"]["Row"];
 type StaffSummary = Pick<
   Database["public"]["Tables"]["staff"]["Row"],
-  "id" | "display_name" | "is_active" | "member_user_id"
+  | "id"
+  | "display_name"
+  | "is_active"
+  | "member_user_id"
+  | "telegram_linked_at"
+  | "ics_enabled_at"
 >;
 type ServiceSummary = Pick<
   Database["public"]["Tables"]["services"]["Row"],
@@ -74,7 +80,22 @@ export type DashboardData = OnboardingContext & {
   members: MemberSummary[];
   invitations: InvitationSummary[];
   bookings: BookingSummary[];
+  planUsage: BusinessPlanUsage;
   nowIso: string;
+};
+
+const DEFAULT_FREE_PLAN_USAGE: BusinessPlanUsage = {
+  planTier: "free",
+  subscriptionStatus: "active",
+  currentPeriodEnd: null,
+  cancelAtPeriodEnd: false,
+  hasStripeCustomer: false,
+  activeStaffCount: 0,
+  maxStaff: 3,
+  activeServicesCount: 0,
+  maxServices: 5,
+  monthlyBookingsCount: 0,
+  maxMonthlyBookings: 100,
 };
 
 /**
@@ -118,7 +139,7 @@ export async function getOnboardingContext(): Promise<OnboardingContext> {
   const [{ data: staff }, { data: services }, { data: weeklyHours }] = await Promise.all([
     supabase
       .from("staff")
-      .select("id, display_name, is_active, member_user_id")
+      .select("id, display_name, is_active, member_user_id, telegram_linked_at, ics_enabled_at")
       .eq("business_id", business.id)
       .order("created_at", { ascending: true }),
     supabase
@@ -169,6 +190,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       members: [],
       invitations: [],
       bookings: [],
+      planUsage: DEFAULT_FREE_PLAN_USAGE,
       nowIso,
     };
   }
@@ -183,6 +205,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     { data: members },
     { data: invitations },
     { data: bookings },
+    { data: planUsageRows },
   ] = await Promise.all([
     supabase
       .from("staff_services")
@@ -213,7 +236,29 @@ export async function getDashboardData(): Promise<DashboardData> {
       )
       .eq("business_id", businessId)
       .order("starts_at", { ascending: true }),
+    supabase.rpc("get_business_plan_usage", { p_business_id: businessId }),
   ]);
+
+  const usageRow = Array.isArray(planUsageRows) ? planUsageRows[0] : planUsageRows;
+  const planUsage: BusinessPlanUsage = usageRow
+    ? {
+        planTier: usageRow.plan_tier,
+        subscriptionStatus: usageRow.subscription_status,
+        currentPeriodEnd: usageRow.current_period_end ?? null,
+        cancelAtPeriodEnd: usageRow.cancel_at_period_end,
+        hasStripeCustomer: usageRow.has_stripe_customer,
+        activeStaffCount: usageRow.active_staff_count,
+        maxStaff: usageRow.max_staff,
+        activeServicesCount: usageRow.active_services_count,
+        maxServices: usageRow.max_services ?? null,
+        monthlyBookingsCount: usageRow.monthly_bookings_count,
+        maxMonthlyBookings: usageRow.max_monthly_bookings ?? null,
+      }
+    : {
+        ...DEFAULT_FREE_PLAN_USAGE,
+        activeStaffCount: ctx.staff.filter((member) => member.is_active).length,
+        activeServicesCount: ctx.services.filter((service) => service.is_active).length,
+      };
 
   return {
     ...ctx,
@@ -222,6 +267,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     members: members ?? [],
     invitations: invitations ?? [],
     bookings: (bookings ?? []) as BookingSummary[],
+    planUsage,
     nowIso,
   };
 }

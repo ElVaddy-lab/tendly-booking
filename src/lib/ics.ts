@@ -113,6 +113,25 @@ export function buildBookingIcs(input: BookingIcsInput): string {
   return `${lines.map(foldIcsLine).join("\r\n")}\r\n`;
 }
 
+export type StaffCalendarEventInput = {
+  bookingId: string;
+  serviceName: string;
+  startsAtIso: string;
+  endsAtIso: string;
+  status: string;
+  customerName: string;
+  notes?: string | null;
+  erased?: boolean;
+};
+
+export type StaffCalendarFeedInput = {
+  businessName: string;
+  businessTimezone: string;
+  staffName: string;
+  events: StaffCalendarEventInput[];
+  now?: Date;
+};
+
 export function buildBookingIcsFilename(slug: string, startsAtIso: string): string {
   const safeSlug = slug.replace(/[^a-z0-9-]+/gi, "-").replace(/^-|-$/g, "") || "booking";
   const date = new Date(startsAtIso);
@@ -123,4 +142,63 @@ export function buildBookingIcsFilename(slug: string, startsAtIso: string): stri
     `${date.getUTCFullYear()}${pad2(date.getUTCMonth() + 1)}${pad2(date.getUTCDate())}` +
     `-${pad2(date.getUTCHours())}${pad2(date.getUTCMinutes())}`;
   return `tendly-${safeSlug}-${stamp}.ics`;
+}
+
+/**
+ * Builds a multi-event RFC 5545 calendar subscription feed for a staff member.
+ * Customer email and phone are intentionally omitted; erased bookings show "Client".
+ */
+export function buildStaffCalendarIcs(input: StaffCalendarFeedInput): string {
+  const dtStamp = formatUtcIcsTimestamp(input.now ?? new Date());
+  const calName = `${input.staffName} — ${input.businessName}`;
+
+  const lines: string[] = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Tendly//Staff Calendar Feed//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    `X-WR-CALNAME:${escapeIcsText(calName)}`,
+    `X-WR-TIMEZONE:${escapeIcsText(input.businessTimezone)}`,
+    "REFRESH-INTERVAL;VALUE=DURATION:PT15M",
+  ];
+
+  for (const event of input.events) {
+    const clientLabel = event.erased ? "Client" : event.customerName;
+    const summary = `${event.serviceName} — ${clientLabel}`;
+    const descParts = [`Client: ${clientLabel}`, `Status: ${event.status}`];
+    const trimmedNotes = !event.erased ? event.notes?.trim() : "";
+    if (trimmedNotes) {
+      descParts.push(`Notes: ${trimmedNotes}`);
+    }
+
+    lines.push(
+      "BEGIN:VEVENT",
+      `UID:staff-${escapeIcsText(event.bookingId)}@tendly.app`,
+      `DTSTAMP:${dtStamp}`,
+      `DTSTART:${formatUtcIcsTimestamp(event.startsAtIso)}`,
+      `DTEND:${formatUtcIcsTimestamp(event.endsAtIso)}`,
+      `SUMMARY:${escapeIcsText(summary)}`,
+      `DESCRIPTION:${escapeIcsText(descParts.join("\n"))}`,
+      `LOCATION:${escapeIcsText(input.businessName)}`,
+      "STATUS:CONFIRMED",
+      "END:VEVENT",
+    );
+  }
+
+  lines.push("END:VCALENDAR");
+  return `${lines.map(foldIcsLine).join("\r\n")}\r\n`;
+}
+
+export function buildStaffCalendarIcsFilename(
+  businessSlug: string,
+  staffName: string,
+): string {
+  const cleanPart = (raw: string, fallback: string) =>
+    raw
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || fallback;
+
+  return `tendly-${cleanPart(businessSlug, "shop")}-${cleanPart(staffName, "staff")}.ics`;
 }

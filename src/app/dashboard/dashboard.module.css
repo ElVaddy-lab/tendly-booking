@@ -726,6 +726,30 @@
   align-items: center;
 }
 
+.integrationSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.integrationSection + .integrationSection {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--tendly-rule);
+}
+
+.integrationHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.integrationActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .alertError {
   margin: 0;
   padding: 0.7rem 0.9rem;
@@ -1585,4 +1609,137 @@
     font-weight: 600;
     color: var(--tendly-ink-soft);
   }
+}
+
+.billingPanelBody {
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.billingHeaderRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.billingTitleGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.billingBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--tendly-rule-control);
+  background: var(--tendly-slot-fill);
+  color: var(--tendly-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.billingBadgePro {
+  background: var(--tendly-ink);
+  border-color: var(--tendly-ink);
+  color: var(--tendly-paper);
+}
+
+.billingBadgeWarn {
+  background: var(--tendly-refused-bg);
+  border-color: #d3b5ab;
+  color: var(--tendly-refused-text);
+}
+
+.billingStatusText {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--tendly-ink-soft);
+}
+
+.billingQuotaGrid {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.65rem;
+}
+
+.billingQuotaCard {
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--tendly-rule);
+  background: var(--tendly-slot-fill);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.billingQuotaLabel {
+  font-size: 0.78rem;
+  color: var(--tendly-ink-soft);
+}
+
+.billingQuotaValue {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 600;
+  color: var(--tendly-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.billingActionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.billingPrimaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--tendly-ink);
+  background: var(--tendly-ink);
+  color: var(--tendly-paper);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 180ms ease-out, border-color 180ms ease-out;
+}
+
+.billingPrimaryButton:hover:not(:disabled) {
+  border-color: var(--tendly-ink-hover);
+  background: var(--tendly-ink-hover);
+}
+
+.billingPrimaryButton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.billingNotice {
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--tendly-rule-control);
+  background: var(--tendly-slot-fill);
+  color: var(--tendly-ink);
+  font-size: 0.86rem;
+}
+
+.billingNote {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--tendly-ink-soft);
 }
