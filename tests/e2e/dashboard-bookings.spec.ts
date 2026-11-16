@@ -145,7 +145,11 @@ test("owner manages Day/Week calendar, manual walk-ins, statuses, and customer d
   await manualCard.getByLabel("Notes (optional)").fill("Front desk cut");
   await manualCard.getByRole("button", { name: "Create manual booking" }).click();
 
-  await expect(manualCard.getByRole("status")).toHaveText("Manual booking added.", {
+  // Match the error alert too, so a failure reports the server's message
+  // instead of "element(s) not found".
+  await expect(
+    manualCard.getByRole("status").or(manualCard.getByRole("alert")),
+  ).toHaveText("Manual booking added.", {
     timeout: 15_000,
   });
   await expect(manualCard.getByLabel("Client self-manage link")).toHaveValue(
